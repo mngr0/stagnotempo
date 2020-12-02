@@ -1,0 +1,19 @@
+server {
+    listen 80;
+    server_name 192.168.128.90;
+
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        root /home/pi/stagnotempo;
+    }
+
+
+
+    location / {
+        include         uwsgi_params;
+        uwsgi_pass      unix:/tmp/uwsgi/stagnotempo.sock;
+    }
+
+
+}

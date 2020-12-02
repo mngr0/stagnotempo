@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<title>How To Serve Django Applications with uWSGI and Nginx on Ubuntu 16.04 | DigitalOcean</title>
+
+<meta name="description" content="Django is a powerful web framework that can help you get your Python application or website off the ground. Django includes a simplified development server for testing your code locally, but for anything even slightly production related, a more secure">
+
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/community/apple-icon-180x180-4b5ac7f80f7cb483dde5afeb99c279301c50ec3670129c73ce568f1b465354be.png" />
+<link rel="apple-touch-icon" sizes="152x152" href="/assets/community/apple-icon-152x152-ff64fd3242c24284fefdaec8d6d85c68f98744142d58b950f7ec67cbf03251d7.png" />
+<link rel="apple-touch-icon" sizes="144x144" href="/assets/community/apple-icon-144x144-3018401d3d675917b06ded0482cdf53a7c3558b4dc7b6b8de21a485a8da27dfe.png" />
+<link rel="apple-touch-icon" sizes="120x120" href="/assets/community/apple-icon-120x120-052cdf68a3af8b01c3fd0d46ed35f8f089c10c690109d20e7b186f0159391863.png" />
+<link rel="apple-touch-icon" sizes="114x114" href="/assets/community/apple-icon-114x114-8d862033fc61d86a60b4bdbbbab284da399da714089995ce7efc249f36409517.png" />
+<link rel="apple-touch-icon" sizes="76x76" href="/assets/community/apple-icon-76x76-d7c1877f2224ca127b591f65d16635fa7472e7b2cd0e1fe7e7dc8b74d03dd874.png" />
+<link rel="apple-touch-icon" sizes="72x72" href="/assets/community/apple-icon-72x72-2d888cc13ddb01fb0d786a0c8567c0a2909eaeb86901da715099b6b88a36b46a.png" />
+<link rel="apple-touch-icon" sizes="60x60" href="/assets/community/apple-icon-60x60-01be5b392df60249f168b8b2eed5c928c63aa43ac398c7180cd219c5acdd1e70.png" />
+<link rel="apple-touch-icon" sizes="57x57" href="/assets/community/apple-icon-57x57-d060d0fd30794efd579d9edc283917e0a65adfd366e151d9a5cfd8fd7d07cb43.png" />
+
+<link rel="icon" type="image/png" sizes="192x192"  href="/assets/community/android-icon-192x192-4d13e6664f412f6904a78be76d626004bcbbd59671f6c755919628134003c2a8.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/community/favicon-32x32-e377577c425642ab495296dfec040ec903e36ffc4cd7a0a4281e84597891a774.png" />
+<link rel="icon" type="image/png" sizes="96x96" href="/assets/community/favicon-96x96-967f34b6716bb3cffebefe1fa53206d38d60c72635e826ec5d172c58fb4ab5a9.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/community/favicon-16x16-ce9c1eb6d969d5b2ec276ae4b715756aa0e63106f33dc53a836687fdfee49ecd.png" />
+
+<meta name="msapplication-TileImage" content="/assets/community/ms-icon-144x144-3018401d3d675917b06ded0482cdf53a7c3558b4dc7b6b8de21a485a8da27dfe.png" />
+<meta name="msapplication-TileColor" content="#0069ff" />
+<meta name="theme-color" content="#0069ff" />
+
+<meta property="og:title" content="How To Serve Django Applications with uWSGI and Nginx on Ubuntu 16.04 | DigitalOcean">
+<meta property="og:description" content="Django is a powerful web framework that can help you get your Python application or website off the ground. Django includes a simplified development server for testing your code locally, but for anything even slightly production related, a more secure">
+<meta property="og:site_name" content="DigitalOcean">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://community-cdn-digitalocean-com.global.ssl.fastly.net/variants/DrUZ3Cwx3tKYUUad6BL9AQJZ/035575f2985fe451d86e717d73691e533a1a00545d7230900ed786341dc3c882">
+<meta property="og:image:url" content="https://community-cdn-digitalocean-com.global.ssl.fastly.net/variants/DrUZ3Cwx3tKYUUad6BL9AQJZ/035575f2985fe451d86e717d73691e533a1a00545d7230900ed786341dc3c882">
+<meta property="og:image:alt" content="How To Serve Django Applications with uWSGI and Nginx on Ubuntu 16.04 | DigitalOcean">
+<meta property="og:url" content="https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04">
+
+<meta name="twitter:site" content="@digitalocean">
+<meta name="twitter:title" content="How To Serve Django Applications with uWSGI and Nginx on Ubuntu 16.04 | DigitalOcean">
+<meta name="twitter:description" content="Django is a powerful web framework that can help you get your Python application or website off the ground. Django includes a simplified development server for testing your code locally, but for anything even slightly production related, a more secure">
+<meta name="twitter:creator" content="DigitalOcean">
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content="https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04"/>
+<meta name="twitter:image" content="https://community-cdn-digitalocean-com.global.ssl.fastly.net/variants/DrUZ3Cwx3tKYUUad6BL9AQJZ/035575f2985fe451d86e717d73691e533a1a00545d7230900ed786341dc3c882">
+<meta name="twitter:image:alt" content="How To Serve Django Applications with uWSGI and Nginx on Ubuntu 16.04 | DigitalOcean">
+
+  <link rel='canonical' href='https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04'>
+
+  <link rel='amphtml' href='https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04.amp'>
+
+
+    
+    <meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="bg5BfiwrzHRH1XBOi4TGDevxGRloB1KxG05/f/iMk8GonKD3ohnXgvUWLGPm3YVXVhyhFAQpB2GRy4ubazE/8w==" />
+
+    <link rel="stylesheet" media="all" href="/assets/community/application-cb96bfb4ecdaf78a1cc6eabeb9e02fcecb9896cd1be3f5218af7d956a182e1a4.css" />
+    <script src="/assets/community/prerequisites-d767b66db7c8ba7d47a922cfce41c73d40601b3586be6f96107d5cd25cc752b8.js"></script>
+
+      <link rel="preconnect" href="https://digitalocean.cdn.prismic.io">
+      <link rel="preconnect" href="https://hello.myfonts.net">
+      <link rel="alternate" type="application/rss+xml" title="RSS" href="/community/tutorials/feed">
+
+      <script>
+//<![CDATA[
+
+  window.cookieDomain = '.digitalocean.com';
+
+//]]>
+</script><script defer src="https://assets.digitalocean.com/cookieConsent/cookieConsent.js"></script>
+<script>
+  (function () {
+    document.addEventListener("DOMContentLoaded", function () {
+      var css = document.getElementById("cookie-consent-css");
+
+      if (css) { return; }
+
+      css = document.createElement("link");
+      css.id = "cookie-consent-css";
+      css.rel = "stylesheet";
+      css.href = "https://assets.digitalocean.com/cookieConsent/cookieConsent.css";
+      document.head.insertBefore(css, document.head.childNodes[ document.head.childNodes.length - 1 ].nextSibling);
+    }, false);
+  })();
+</script>
+
+      <script type="text/javascript">
+  if(window.analytics=window.analytics||[],window.analytics.included)window.console&&console.error&&console.error("analytics.js included twice");else{window.analytics.included=!0,window.analytics.methods=["identify","group","track","page","pageview","alias","ready","on","once","off","trackLink","trackForm","trackClick","trackSubmit"],window.analytics.factory=function(a){return function(){var n=Array.prototype.slice.call(arguments);return n.unshift(a),window.analytics.push(n),window.analytics}};for(var i=0;i<window.analytics.methods.length;i++){var key=window.analytics.methods[i];window.analytics[key]=window.analytics.factory(key)}window.analytics.load=function(a){var n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=("https:"===document.location.protocol?"https://":"http://")+"cdn.segment.com/analytics.js/v1/"+a+"/analytics.min.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(n,t)},window.analytics.SNIPPET_VERSION="2.0.9",window.analytics.load("puo3uv968t")}
+  window.analytics.page();
+</script>
+
+<!-- Google Tag Manager -->
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-KHWBBT');
+</script>
+<!-- End Google Tag Manager -->
+
+<script src="/assets/community/internalCookies-d87064530395e23ede521d41535044c0b89092bef82bbb545bd1c8f731908bad.js"></script>
+
+        <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+      <script>
+        window.comApp = {
+          prefix: '/community',
+          svgIconPath: 'https://www.digitalocean.com/assets/community/icon-sprite-a36f54b391966bc94e4a1e4467047db73568edf98e549f4bc919b952f5272560.svg',
+          railsEnv: 'production',
+          rootUrl: 'https://www.digitalocean.com/community',
+          algolia_application_id: '6ZHEUVKJ88',
+          algolia_api_key: 'c5470567eae7fa1177d43222e18ba086'
+        };
+      </script>
+      <script>
+  window.Prism = window.Prism || {};
+  window.Prism.manual = true;
+</script>
+ 
+
+    <script src="/assets/community/application-3b4bde22f8152e9d0d0292806ceeaf0d65317cdb9eb5ab8d7a1c96674db5a141.js"></script>
+  </head>
+
+  <body class="feature-filter-bar feature-upvotes tutorials-controller tutorial-single" data-env="production" data-prefix="/community" data-user-id="" data-facebook-app-id="694818843983011"   data-completed-tutorial-id="" data-tutorial-id="1964" data-js="tutorial"
+>
+    
+
+    <div class='outside_viewport'>
+        <div id="contents-modal" class="hidden" role="dialog" aria-labelledby="contents-modal-title" aria-modal='true'>
+    <div class='mini-dialog-panel'>
+      <div class='dialog-header'>
+        <span class='close-btn'>&times;</span>
+        <span class='dialog-title' id="contents-modal-title">Contents</span>
+      </div>
+
+      <div class='dialog-body'>
+        <div class="table-of-contents-modal"></div>
+      </div>
+    </div>
+  </div>
+    <div class="table-of-contents">
+      <div data-js="tableOfContentsDesktop"></div>
+    </div>
+    <div id='share-modal' class="hidden" role="dialog" aria-labelledby="share-modal-title" aria-modal='true'>
+  <div class='mini-dialog-panel'>
+    <div class='dialog-header'>
+      <span class='close-btn'>&times;</span>
+      <span class='dialog-title' id="share-modal-title">Share this Tutorial</span>
+    </div>
+
+    <div class='dialog-body'>
+      <h2>Where would you like to share this to?</h2>
+
+      <div class="social-sharing social-sharing-container">
+        <ul>
+          <li class="shareBtn" id="sbTwitter">
+            <a href="http://twitter.com/share?text=How%20To%20Serve%20Django%20Applications%20with%20uWSGI%20and%20Nginx%20on%20Ubuntu%2016.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04?utm_content=how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+              <span class="sIcon icon-bird"></span>
+            </a>
+            <a href="http://twitter.com/share?text=How%20To%20Serve%20Django%20Applications%20with%20uWSGI%20and%20Nginx%20on%20Ubuntu%2016.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04?utm_content=how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+              Twitter
+            </a>
+          </li>
+
+          <li class="shareBtn" id="sbReddit">
+            <a href="https://www.reddit.com/submit?title=How%20To%20Serve%20Django%20Applications%20with%20uWSGI%20and%20Nginx%20on%20Ubuntu%2016.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04?utm_content=how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=rdshare" class="share-icon share-popup" target="_blank" title="Share on Reddit">
+              <span class="sIcon icon-reddit"></span>
+            </a>
+            <a href="https://www.reddit.com/submit?title=How%20To%20Serve%20Django%20Applications%20with%20uWSGI%20and%20Nginx%20on%20Ubuntu%2016.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04?utm_content=how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=rdshare" class="share-link share-popup" target="_blank" title="Share on Reddit">
+              Reddit
+            </a>
+          </li>
+
+          <li class="shareBtn" id="sbYC">
+            <a href="https://news.ycombinator.com/submitlink?t=How%20To%20Serve%20Django%20Applications%20with%20uWSGI%20and%20Nginx%20on%20Ubuntu%2016.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04?utm_content=how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+              <span class="sIcon icon-hacker-news"></span>
+            </a>
+            <a href="https://news.ycombinator.com/submitlink?t=How%20To%20Serve%20Django%20Applications%20with%20uWSGI%20and%20Nginx%20on%20Ubuntu%2016.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04?utm_content=how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+              Hacker News
+            </a>
+          </li>
+
+          <li class="shareBtn" id="sbFacebook">
+            <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04?utm_content=how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+              <span class="sIcon icon-facebook-B"></span>
+            </a>
+            <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04?utm_content=how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+              Facebook
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="flex-form">
+        <p class="dialog-text">Share link</p>
+
+        <label for="share-modal-share-link" class="sr-only">Tutorial share link</label>
+        <div class="field">
+          <input type="text" id="share-modal-share-link" name="share-modal-share-link" readonly="readonly"
+                 value="https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04?utm_content=how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=linkshare" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!-- algolia universal search -->
+<input type="hidden" id="q-universal-search" value="" />
+
+
+
+<div id='share-modal' class="hidden" role="dialog" aria-labelledby="share-modal-title" aria-modal='true'>
+  <div class='mini-dialog-panel'>
+    <div class='dialog-header'>
+      <span class='close-btn'>&times;</span>
+      <span class='dialog-title' id="share-modal-title">Share this Tutorial</span>
+    </div>
+
+    <div class='dialog-body'>
+      <h2>Where would you like to share this to?</h2>
+
+      <div class="social-sharing social-sharing-container">
+        <ul>
+          <li class="shareBtn" id="sbTwitter">
+            <a href="http://twitter.com/share?text=How%20To%20Serve%20Django%20Applications%20with%20uWSGI%20and%20Nginx%20on%20Ubuntu%2016.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04?utm_content=how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-icon share-popup" title="Share on Twitter" target="_blank">
+              <span class="sIcon icon-bird"></span>
+            </a>
+            <a href="http://twitter.com/share?text=How%20To%20Serve%20Django%20Applications%20with%20uWSGI%20and%20Nginx%20on%20Ubuntu%2016.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04?utm_content=how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=twshare" class="share-link share-popup" title="Share on Twitter" target="_blank">
+              Twitter
+            </a>
+          </li>
+
+          <li class="shareBtn" id="sbReddit">
+            <a href="https://www.reddit.com/submit?title=How%20To%20Serve%20Django%20Applications%20with%20uWSGI%20and%20Nginx%20on%20Ubuntu%2016.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04?utm_content=how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=rdshare" class="share-icon share-popup" target="_blank" title="Share on Reddit">
+              <span class="sIcon icon-reddit"></span>
+            </a>
+            <a href="https://www.reddit.com/submit?title=How%20To%20Serve%20Django%20Applications%20with%20uWSGI%20and%20Nginx%20on%20Ubuntu%2016.04&amp;url=https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04?utm_content=how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=rdshare" class="share-link share-popup" target="_blank" title="Share on Reddit">
+              Reddit
+            </a>
+          </li>
+
+          <li class="shareBtn" id="sbYC">
+            <a href="https://news.ycombinator.com/submitlink?t=How%20To%20Serve%20Django%20Applications%20with%20uWSGI%20and%20Nginx%20on%20Ubuntu%2016.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04?utm_content=how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-icon share-popup" target="_blank" title="Submit to Hacker News">
+              <span class="sIcon icon-hacker-news"></span>
+            </a>
+            <a href="https://news.ycombinator.com/submitlink?t=How%20To%20Serve%20Django%20Applications%20with%20uWSGI%20and%20Nginx%20on%20Ubuntu%2016.04&amp;u=https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04?utm_content=how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=hnshare" class="share-link share-popup" target="_blank" title="Submit to Hacker News">
+              Hacker News
+            </a>
+          </li>
+
+          <li class="shareBtn" id="sbFacebook">
+            <a class="share-icon share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04?utm_content=how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+              <span class="sIcon icon-facebook-B"></span>
+            </a>
+            <a class="share-link share-popup" href="https://www.facebook.com/sharer/sharer.php?u=https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04?utm_content=how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=fbshare" title="Share on Facebook" target="_blank">
+              Facebook
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="flex-form">
+        <p class="dialog-text">Share link</p>
+
+        <label for="share-modal-share-link" class="sr-only">Tutorial share link</label>
+        <div class="field">
+          <input type="text" id="share-modal-share-link" name="share-modal-share-link" readonly="readonly"
+                 value="https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04?utm_content=how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04&amp;utm_medium=community&amp;utm_source=linkshare" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div id="newsletter-signup-dialog" class="newsletter-signups-dialog" data-newsletter-signup-dialog data-article-target=".content-body">
+  <div class="form-message">
+  <div class="pull-right">
+    <a href="javascript:;" class="newsletter-signups-dialog-dismiss" data-newsletter-signup-dismiss>&times;</a>
+
+  </div>
+  <h4 class="newsletter-signups-dialog-title">
+    Sign up for our newsletter
+  </h4>
+  <p class="newsletter-signups-dialog-description">
+    Get the latest tutorials on SysAdmin and open source topics.
+  </p>
+  <form class="newsletter-signup" id="new_newsletter_signup" data-newsletter-signup="true" action="/community/newsletter" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="&#x2713;" />
+
+  <input data-newsletter-signup-field="url" type="hidden" name="newsletter_signup[url]" id="newsletter_signup_url" />
+  <input data-newsletter-signup-field="title" type="hidden" name="newsletter_signup[title]" id="newsletter_signup_title" />
+
+  <div class="newsletter-signup-ajax-error" data-newsletter-signup-ajax-error></div>
+
+
+  <div class="form-group">
+    <input placeholder="Enter your email address" required="required" class="field" type="email" name="newsletter_signup[email]" id="newsletter_signup_email" />
+  
+    <button data-disable-with="Sign Up" class="button blue-button full-width-button">
+      Sign Up
+    </button>
+  </div>
+</form>
+</div>
+
+<div class="thanks-message hidden" data-newsletter-signup-successful> 
+  <div class='pull-right'> 
+    <a href='javascript:;' class='newsletter-signups-dialog-dismiss' data-newsletter-signup-dismiss>&times;</a> 
+  </div> 
+
+  <span class='newsletter-signups-dialog-success'> 
+    Thanks for signing up! 
+  </span> 
+</div>
+
+</div>
+
+
+
+      
+    </div>
+
+      
+      
+<div style="display: none;">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <symbol id="navbar-logo" xmlns="http://www.w3.org/2000/svg"> <title>DigitalOcean home</title> <g fill="currentColor" fill-rule="evenodd"> <path d="M14.4942 29v-5.5674c5.9572 0 10.5633-5.8478 8.2892-12.059-.8425-2.3006-2.693-4.1355-5.0126-4.9706-6.262-2.2534-12.1564 2.3135-12.1573 8.2207 0 0-.0006.0014-.0014.0014H0C0 5.2123 9.1687-2.1167 19.1138.9624c4.3459 1.3457 7.7993 4.7708 9.1561 9.081C31.3742 19.9068 23.985 29 14.4942 29"></path> <path d="M14.507 23.4468H8.9103v-5.549s.0005-.0011.0011-.0011h5.5949c.0006 0 .0009.0006.0009.0006v5.5495M8.9093 27.7118H4.6105l-.0012-.0012v-4.2638h4.3009v4.2638l-.0009.0012M4.6125 23.4468H1.0088c-.0015 0-.0026-.0012-.0026-.0012v-3.5724s.0011-.0025.0026-.0025h3.601c.0015 0 .0027.0011.0027.0011v3.575M43.2806 9.6357h1.649c1.8346 0 3.345.358 4.49 1.0647 1.2714.7603 1.9164 2.2069 1.9164 4.2991 0 2.1554-.6465 3.6671-1.9207 4.4942h-.0008c-1.0971.7196-2.5981 1.0846-4.462 1.0846h-1.6719V9.6357zm8.324-1.0736c-1.6598-1.142-3.7252-1.721-6.1387-1.721h-5.2537V23.373h5.2537c2.4074 0 4.4737-.6113 6.1407-1.8157.907-.6382 1.6197-1.5304 2.1185-2.651.4962-1.1144.7479-2.4288.7479-3.9067 0-1.4605-.2517-2.758-.7482-3.857-.4988-1.104-1.212-1.972-2.1202-2.5804zM58.1303 6.6376c-.5051 0-.9403.1777-1.2906.5254-.3546.335-.5346.7597-.5346 1.2618 0 .501.1791.9322.532 1.2825.3529.35.788.528 1.2932.528.5042 0 .9394-.178 1.2928-.528.3535-.3508.5324-.7821.5324-1.2825 0-.5015-.18-.926-.5324-1.2592-.3534-.3503-.7886-.528-1.2928-.528M56.6247 23.3729h2.9538V11.7294h-2.9538zM69.5321 19.5787c-.5162.5814-1.1793.8635-2.0264.8635-.8471 0-1.5064-.282-2.015-.863-.5065-.5777-.7637-1.3439-.7637-2.2773 0-.9479.2572-1.7238.764-2.3058.502-.576 1.1796-.8683 2.0147-.8683.8465 0 1.5096.284 2.0262.8695.5142.582.7751 1.3573.7751 2.3046 0 .9328-.2609 1.6988-.7749 2.2768zm.775-6.8767c-.8908-.7858-1.8858-1.2444-2.9614-1.2444-1.6305 0-2.9859.5598-4.0276 1.662-1.0555 1.0932-1.5907 2.5006-1.5907 4.1823 0 1.644.5269 3.0464 1.568 4.1709 1.0498 1.088 2.4123 1.6396 4.0503 1.6396 1.139 0 2.1182-.3144 2.9157-.9356v.268c0 .9662-.2608 1.7176-.7751 2.234-.5137.5154-1.226.7764-2.1173.7764-1.3637 0-2.2183-.5314-3.2589-1.9262l-2.0115 1.917.0542.0754c.4346.605 1.1 1.197 1.9785 1.7594.8787.5603 1.9832.8447 3.2832.8447 1.7536 0 3.1726-.5363 4.2172-1.5933 1.0506-1.0628 1.5835-2.486 1.5835-4.2286V11.7294H70.307v.9726zM75.7434 23.3729h2.9541V11.7294h-2.9541zM77.249 6.6376c-.5052 0-.94.1777-1.2906.5254-.3547.335-.5344.7597-.5344 1.2618 0 .501.1789.9322.532 1.2825.353.35.7878.528 1.293.528.5045 0 .9396-.178 1.2928-.528.3535-.3508.5323-.7821.5323-1.2825 0-.5015-.1797-.926-.5323-1.2592-.3532-.3503-.7883-.528-1.2929-.528M85.1724 8.5831h-2.9082v3.1463h-1.6888v2.6702h1.6888v4.8365c0 1.5134.3047 2.5964.9064 3.2181.6031.6247 1.6741.9414 3.1831.9414.48 0 .963-.0156 1.4354-.0463l.133-.0088v-2.6683l-1.013.0526c-.7033 0-1.1728-.1226-1.3961-.3637-.226-.245-.3406-.7636-.3406-1.5404v-4.421h2.7497v-2.6703h-2.7497V8.583M101.7735 23.3729h2.9544V6.8412h-2.9544zM134.5728 19.2094c-.5286.5874-1.0693 1.0966-1.4855 1.3613v.0005c-.4085.2599-.924.3918-1.532.3918-.8703 0-1.5703-.3144-2.1405-.9621-.567-.644-.8545-1.4716-.8545-2.4613s.2838-1.8162.8436-2.4556c.5625-.6434 1.2588-.9562 2.1285-.9562.9515 0 1.9548.5869 2.8145 1.5947l1.9525-1.8568c-1.273-1.6433-2.897-2.4081-4.8352-2.4081-1.622 0-3.028.5862-4.1788 1.7411-1.1446 1.147-1.7251 2.6074-1.7251 4.3409 0 1.7335.58 3.1977 1.7234 4.352 1.1447 1.1557 2.5514 1.7417 4.1805 1.7417 2.139 0 3.8651-.9158 5.029-2.5935l-1.9204-1.8304M140.2405 16.0973c.1422-.5567.401-1.0207.7714-1.381.4005-.3906.9214-.5885 1.5489-.5885.716 0 1.2702.2019 1.6474.6014.3495.3696.5467.8296.588 1.368h-4.5557zm6.4569-2.7414c-.4191-.5788-.9896-1.0448-1.6965-1.3854-.7047-.3404-1.526-.513-2.441-.513-1.6489 0-2.9982.6037-4.0113 1.7946-.9836 1.182-1.4818 2.651-1.4818 4.3665 0 1.7648.547 3.2253 1.6254 4.341 1.0727 1.1105 2.5083 1.6737 4.267 1.6737 1.992 0 3.627-.799 4.8587-2.3752l.0666-.0847-1.9273-1.837c-.1789.2139-.4317.4561-.6628.6722-.2918.273-.5659.4842-.8588.6289-.4415.218-.9369.3255-1.4907.3255-.8187 0-1.4964-.2388-2.0147-.71-.4847-.4403-.768-1.0345-.843-1.7683h7.8265l.0264-1.0693c0-.7569-.1038-1.4862-.3088-2.1677a6.312 6.312 0 0 0-.934-1.8918zM152.797 18.9234c.3352-.2318.8085-.3483 1.4073-.3483.7112 0 1.4654.1413 2.2426.421v1.1421c-.6421.592-1.4996.8922-2.5499.8922-.5114 0-.909-.1126-1.1822-.3355-.2683-.218-.3985-.4955-.3985-.847 0-.3994.1571-.7022.4808-.9245zm5.2452-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.678-1.143-.9829 0-1.902.2144-2.7336.6324-.7691.387-1.5245 1.0275-2.0043 1.8662l.0298.0358 1.8917 1.796c.7791-1.2322 1.6454-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5819.7304.5819 1.249v.5652c-.7324-.221-1.4629-.333-2.1738-.333-1.47 0-2.6663.3432-3.555 1.0193-.9.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1461 2.6433.7677.6372 1.7275.961 2.8524.961 1.1246 0 2.177-.4495 3.132-1.2191v.9587h2.9089v-7.4852c0-1.4173-.4572-2.523-1.3591-3.2872zM170.7656 12.8285c-.8227-.9092-1.9791-1.371-3.4371-1.371-1.172 0-2.1236.3338-2.8357.9926v-.7207h-2.897v11.6435h2.954v-6.4215c0-.8823.2119-1.5828.6293-2.0826.4162-.4987.989-.741 1.75-.741.6691 0 1.1765.2167 1.5506.662.3759.4474.5662 1.0638.5662 1.8335v6.7496H172v-6.7496c0-1.6127-.415-2.889-1.2344-3.7948M92.8158 18.9234c.3351-.2318.8087-.3483 1.4075-.3483.7112 0 1.4652.1413 2.2426.421v1.1421c-.6421.592-1.4998.8922-2.5502.8922-.5114 0-.9087-.1126-1.1819-.3355-.2683-.218-.3988-.4955-.3988-.847 0-.3994.1574-.7022.4808-.9245zm5.2451-6.3229h-.0003c-.8952-.758-2.1328-1.143-3.6776-1.143-.983 0-1.902.2144-2.7337.6324-.7694.387-1.5247 1.0275-2.0043 1.8662l.0295.0358 1.8917 1.796c.7792-1.2322 1.6458-1.66 2.7941-1.66.6172 0 1.1298.1643 1.5234.4881.3916.3216.5822.7304.5822 1.249v.5652c-.7327-.221-1.4631-.333-2.174-.333-1.47 0-2.6664.3432-3.555 1.0193-.8999.6852-1.3562 1.665-1.3562 2.9125 0 1.094.3847 1.9829 1.1463 2.6433.7677.6372 1.7272.961 2.8524.961 1.1246 0 2.1766-.4495 3.1318-1.2191v.9587H99.42v-7.4852c0-1.4173-.457-2.523-1.359-3.2872zM115.4464 9.5808c-3.0682 0-5.5645 2.4755-5.5645 5.5188s2.4963 5.5188 5.5645 5.5188c3.0682 0 5.5645-2.4755 5.5645-5.5188s-2.4963-5.5188-5.5645-5.5188zm0 14.0408c-4.7383 0-8.5928-3.8228-8.5928-8.522 0-4.6994 3.8545-8.5223 8.5928-8.5223 4.738 0 8.5925 3.8229 8.5925 8.5223 0 4.6992-3.8545 8.522-8.5925 8.522z"></path> </g> </symbol>
+    <symbol id="navbar-community_logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 532.2 99.8" fill="currentColor"> <path class="st0" d="M98.5,23c15.5,0,27.7,12.1,27.7,28.2c0,16.1-12.3,28.1-27.7,28.1c-15.6,0-27.7-11.9-27.7-28.1 C70.8,35.1,82.9,23,98.5,23z M98.5,67.9c8.7,0,14.9-7,14.9-16.8c0-9.8-6.2-16.8-14.9-16.8c-8.8,0-15,7-15,16.8 C83.5,60.9,89.7,67.9,98.5,67.9z"/> <path class="st0" d="M166.8,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M255.5,45.9c0-7-3.5-11.6-9.9-11.6c-7.2,0-11.1,5.3-11.1,13.1V78h-12.5V24.3h12.3V29c2.4-2.8,7-6,13.9-6 c7.3,0,12.2,3.1,15,7c4.4-4.9,10-7,16.8-7c14.4,0,21.4,8.5,21.4,23.8V78h-12.5V45.9c0-7-3.5-11.6-9.9-11.6 c-7.2,0-11.2,5.3-11.2,13.1V78h-12.4V45.9z"/> <path class="st0" d="M322.5,56.4c0,7,3.6,11.6,10.1,11.6c7.2,0,11.2-5.6,11.2-13.5V24.3h12.5V78h-12.3v-4.4 c-3.4,3.7-8.1,5.6-13.9,5.6c-11.9,0-20.1-8.4-20.1-23.7V24.3h12.5V56.4z"/> <path class="st0" d="M378.2,78h-12.5V24.3h12.3v4.4c2.7-3.1,7.7-5.7,13.9-5.7c13.1,0,21.3,8.5,21.3,23.8V78h-12.5V46.8 c0-7.5-3.7-12.5-10.6-12.5c-7.8,0-11.8,5.6-11.8,14V78z"/> <path class="st0" d="M427.8,0.2c4.4,0,7.9,3.4,7.9,7.8s-3.5,7.9-7.9,7.9c-4.4,0-7.9-3.5-7.9-7.9S423.4,0.2,427.8,0.2z M421.4,24.3 h12.5V78h-12.5V24.3z"/> <path class="st0" d="M446.7,59.1V35.5h-6.5V24.3h6.5v-15H459v15h12.2v11.2H459v21.7c0,7.8,1.8,9.8,8.8,9.8c1.2,0,4.1-0.2,4.1-0.2 v11.2c0,0-2.4,0.2-6.7,0.2C451.2,78.1,446.7,72.7,446.7,59.1z"/> <path class="st0" d="M497.3,78.7l-21.3-54.4h14.2l14,38.8l14.2-38.8h13.6l-24.1,60.2c-3.7,9.4-7.2,15.3-21.3,15.3 c-2.5,0-4.8-0.1-4.8-0.1V88c0,0,1.5,0.1,2.8,0.1c7.6,0,9.8-2.3,11.8-7.8L497.3,78.7z"/> <path class="st0" d="M62.4,55.9c-5.3,7-12.2,11.4-22.1,11.4c-15.6,0-27-11.7-27-27.5c0-16.1,11.4-27.8,26.5-27.8 c10,0,16.8,4.8,21.3,11.3l8.4-8.8C63.1,5.7,53.3,0,39.7,0C17.1,0,0,15.9,0,39.8c0,23.4,17.1,39.4,40.1,39.4c13.1,0,22-4.9,28.6-12.2 L62.4,55.9z"/> </symbol>
+    <symbol id="navbar-control_panel_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M19.6875 23.4862C19.6885 23.9722 19.4965 24.4388 19.1537 24.7833C18.8109 25.1279 18.3454 25.3222 17.8594 25.3237H3.23438C2.99366 25.3232 2.75539 25.2753 2.53321 25.1827C2.31102 25.09 2.10927 24.9545 1.93949 24.7839C1.7697 24.6132 1.63522 24.4108 1.54373 24.1881C1.45223 23.9655 1.40552 23.727 1.40626 23.4862V3.25498C1.40577 3.01417 1.45271 2.77562 1.54441 2.55295C1.63611 2.33028 1.77077 2.12785 1.9407 1.95722C2.11063 1.7866 2.31251 1.65111 2.5348 1.5585C2.75709 1.46589 2.99545 1.41797 3.23626 1.41748L17.8613 1.44186C18.347 1.44384 18.812 1.63843 19.1544 1.98292C19.4968 2.32741 19.6885 2.79366 19.6875 3.27936V23.4862Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5863 12.27C43.5828 12.7516 43.3883 13.212 43.0456 13.5503C42.7028 13.8885 42.2397 14.0768 41.7582 14.0738H27.1332C26.8947 14.0755 26.6582 14.0302 26.4372 13.9405C26.2162 13.8507 26.015 13.7183 25.8453 13.5508C25.6755 13.3833 25.5404 13.1839 25.4477 12.9642C25.355 12.7444 25.3065 12.5085 25.3051 12.27V3.24565C25.308 2.76461 25.5019 2.30442 25.8439 1.96621C26.186 1.62799 26.6484 1.43941 27.1294 1.4419L41.7544 1.41753C42.2365 1.41403 42.7002 1.60205 43.0437 1.94027C43.3872 2.27849 43.5823 2.73924 43.5863 3.22128V12.27Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M19.6875 41.7956C19.686 42.0347 19.6375 42.2712 19.5446 42.4915C19.4518 42.7118 19.3164 42.9117 19.1463 43.0797C18.9762 43.2477 18.7747 43.3806 18.5532 43.4707C18.3318 43.5609 18.0947 43.6065 17.8556 43.605L3.23063 43.5806C2.74908 43.5826 2.28644 43.3934 1.94436 43.0545C1.60228 42.7155 1.40873 42.2547 1.40625 41.7731V32.7563C1.40748 32.5175 1.45575 32.2813 1.54831 32.0612C1.64087 31.8412 1.7759 31.6415 1.94569 31.4736C2.11547 31.3057 2.31667 31.173 2.53779 31.0829C2.75892 30.9929 2.99562 30.9473 3.23438 30.9488H17.8594C18.3414 30.9463 18.8047 31.1352 19.1475 31.4742C19.4903 31.8131 19.6845 32.2742 19.6875 32.7563V41.7956Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M27.1349 43.605C26.894 43.6045 26.6555 43.5565 26.433 43.4638C26.2106 43.3711 26.0087 43.2354 25.8387 43.0646C25.6688 42.8937 25.5341 42.6911 25.4426 42.4682C25.351 42.2453 25.3042 42.0066 25.3049 41.7656V21.5381C25.3042 21.2973 25.3509 21.0587 25.4424 20.8359C25.5338 20.6132 25.6683 20.4106 25.8381 20.2398C26.0078 20.069 26.2095 19.9333 26.4317 19.8405C26.6539 19.7476 26.8923 19.6995 27.1331 19.6987H41.7581C41.9989 19.6995 42.2372 19.7476 42.4594 19.8405C42.6816 19.9333 42.8833 20.069 43.0531 20.2398C43.2228 20.4106 43.3573 20.6132 43.4488 20.8359C43.5402 21.0587 43.5869 21.2973 43.5862 21.5381V41.7412C43.5872 42.2271 43.3955 42.6935 43.0532 43.0383C42.7109 43.3831 42.2458 43.5781 41.7599 43.5806L27.1349 43.605Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="navbar-community_icon" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"> <g clip-path="url(#clip0)"> <path d="M12.6562 10.5469C12.6562 9.85155 12.8624 9.17184 13.2487 8.5937C13.635 8.01556 14.1841 7.56495 14.8265 7.29886C15.4689 7.03277 16.1758 6.96315 16.8577 7.0988C17.5397 7.23445 18.1661 7.56929 18.6578 8.06095C19.1495 8.55262 19.4843 9.17905 19.6199 9.86101C19.7556 10.543 19.686 11.2499 19.4199 11.8922C19.1538 12.5346 18.7032 13.0837 18.1251 13.47C17.5469 13.8563 16.8672 14.0625 16.1719 14.0625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M16.1719 18.2812C16.0328 18.2812 15.8969 18.3225 15.7812 18.3997C15.6656 18.477 15.5755 18.5868 15.5223 18.7153C15.4691 18.8438 15.4551 18.9852 15.4823 19.1215C15.5094 19.2579 15.5764 19.3832 15.6747 19.4816C15.773 19.5799 15.8983 19.6469 16.0347 19.674C16.1711 19.7011 16.3125 19.6872 16.4409 19.634C16.5694 19.5808 16.6792 19.4906 16.7565 19.375C16.8338 19.2594 16.875 19.1234 16.875 18.9844C16.875 18.7979 16.8009 18.6191 16.6691 18.4872C16.5372 18.3553 16.3584 18.2812 16.1719 18.2812Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 4.21875V12.6562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M29.5312 1.40625C30.2772 1.40625 30.9925 1.70257 31.52 2.23001C32.0474 2.75746 32.3438 3.47283 32.3438 4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 1.40625H29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 4.21875C1.40625 3.47283 1.70257 2.75746 2.23001 2.23001C2.75746 1.70257 3.47283 1.40625 4.21875 1.40625" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M1.40625 23.9062V4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M4.21875 26.7188C3.47283 26.7187 2.75746 26.4224 2.23001 25.895C1.70257 25.3675 1.40625 24.6522 1.40625 23.9062" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 26.7188H4.21875" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9.84375 35.1562V26.7188" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.4688 30.9375L9.84375 35.1562" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M43.5938 35.1562H37.9688V43.5938L29.5312 35.1562H21.0938V18.2812H43.5938V35.1562Z" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> <path d="M32.3438 23.9062V29.5312" stroke="#0069FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g> <defs> <clipPath id="clip0"> <rect width="45" height="45" fill="white"/> </clipPath> </defs> </symbol>
+    <symbol id="navbar-search" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"></path></symbol>
+    <symbol id="navbar-logomark" viewBox="65.2 173.5 180 180" fill="currentColor"><path d="M155.2,351.7v-34.2c36.2,0,64.3-35.9,50.4-74c-5.1-14.1-16.4-25.4-30.5-30.5c-38.1-13.8-74,14.2-74,50.4l0,0H67c0-57.7,55.8-102.7,116.3-83.8c26.4,8.3,47.5,29.3,55.7,55.7C257.9,295.9,213,351.7,155.2,351.7z"/> <polygon points="155.3,317.6 121.3,317.6 121.3,283.6 121.3,283.6 155.3,283.6 155.3,283.6"/> <polygon points="121.3,343.8 95.1,343.8 95.1,343.8 95.1,317.6 121.3,317.6"/> <path d="M95.1,317.6H73.2l0,0v-21.9l0,0h21.9l0,0V317.6z"/></symbol>
+    <symbol id="navbar-hubforgood" viewBox="6 6 30 30" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5"><circle class="cls-3" cx="21" cy="21.03" r="8.92"/><path class="cls-3" d="M12.08,21a8.94,8.94,0,0,1,8.6-8.92"/><path class="cls-3" d="M29.92,21a9.18,9.18,0,0,1-2.61,6.37A9,9,0,0,1,20.75,30"/><path class="cls-3" d="M21,25.36S16.35,22.69,16.35,20a2.3,2.3,0,0,1,4.59,0h0a2.28,2.28,0,0,1,2.29-2.29A2.25,2.25,0,0,1,25.52,20C25.65,22.69,21,25.36,21,25.36Z"/><path class="cls-3" d="M7.43,20.84A13.49,13.49,0,0,1,20.68,7.46"/><path class="cls-3" d="M34.57,20.91a13.57,13.57,0,0,1-3.95,9.68,13.35,13.35,0,0,1-9.68,3.95"/><path class="cls-3" d="M20.87,34.6a13.42,13.42,0,0,1-9.49-4,13.64,13.64,0,0,1-4-9.81l4.65.13a8.94,8.94,0,0,0,2.61,6.31,9.09,9.09,0,0,0,6.06,2.61Z"/><path class="cls-3" d="M29.92,21a9.06,9.06,0,0,0-2.61-6.31,8.89,8.89,0,0,0-6.63-2.61V7.4a13.76,13.76,0,0,1,9.88,3.95,13.42,13.42,0,0,1,3.95,9.49Z"/></symbol>
+    <symbol id="navbar-write4do" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M16.3063 17.67L11.6663 18.3338L12.3288 13.6925L24.2613 1.76002C24.7887 1.23257 25.5041 0.936249 26.25 0.936249C26.6194 0.936249 26.9851 1.009 27.3263 1.15034C27.6675 1.29168 27.9776 1.49885 28.2388 1.76002C28.4999 2.02118 28.7071 2.33123 28.8484 2.67246C28.9898 3.01369 29.0625 3.37942 29.0625 3.74877C29.0625 4.11811 28.9898 4.48384 28.8484 4.82507C28.7071 5.1663 28.4999 5.47635 28.2388 5.73752L16.3063 17.67Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M22.935 3.08624L26.9125 7.06374"  stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M23.4375 17.8125V27.1875C23.4375 27.6848 23.24 28.1617 22.8883 28.5133C22.5367 28.865 22.0598 29.0625 21.5625 29.0625H2.8125C2.31522 29.0625 1.83831 28.865 1.48667 28.5133C1.13504 28.1617 0.9375 27.6848 0.9375 27.1875V8.4375C0.9375 7.94022 1.13504 7.46331 1.48667 7.11167C1.83831 6.76004 2.31522 6.5625 2.8125 6.5625H12.1875" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+    <symbol id="navbar-hacktoberfest" viewBox="0 0 30 30" fill="none" stroke="currentColor"> <path d="M19.2063 24.9918L16.5714 22.3569V14.4854L13.986 17.0708V23.5755L12.5615 25L11.1371 23.5591V8.44175L10.7419 8.04652L8.93042 9.8662L8 8.94401L11.9358 5.00823L11.944 5.01647L12.1005 5.16468L13.9778 7.04199V13.8431L16.5632 11.2577V8.42528L15.2705 7.12433L17.3948 5L19.4286 7.03376V20.9572L20.4249 21.9535L21.6352 20.7431L22.5492 21.6571L19.2063 24.9918Z" fill="currentcolor"/> <rect x="0.75" y="0.75" width="28.5" height="28.5" rx="2.25" stroke-width="1.5" stroke="currentColor"/> </symbol>
+    <symbol id="navbar-build" viewBox="0 0 16 16" fill="none" stroke="currentColor"> <path d="M1.5 14.5C1.23478 14.5 0.98043 14.3946 0.792893 14.2071C0.605357 14.0196 0.5 13.7652 0.5 13.5V2.57667C0.500879 2.29139 0.614596 2.01804 0.81632 1.81632C1.01804 1.6146 1.29139 1.50088 1.57667 1.5H14.4287C14.7125 1.50088 14.9845 1.61403 15.1852 1.81476C15.386 2.01548 15.4991 2.28747 15.5 2.57133V13.4233C15.4991 13.7086 15.3854 13.982 15.1837 14.1837C14.982 14.3854 14.7086 14.4991 14.4233 14.5H1.5Z" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.5 4.5H0.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M11 7.5L13 9.5L11 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M5 7.5L3 9.5L5 11.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M9 7.5L7 11.5" stroke-linecap="round" stroke-linejoin="round"/> </symbol>
+  </svg>
+</div>
+
+<nav class="navbar" role="navigation" aria-label="Navigation" data-js="global-navbar">
+  <ul role="menubar" class="utility">
+    <li role="banner" data-flex="grow" data-show="always" data-js="global-navbar-banner">
+    </li>
+    <li role="menuitem">
+      <a href="/products/">Products</a>
+    </li>
+    <li role="menuitem">
+      <a href="/pricing/">Pricing</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Docs</span>
+      <div role="menuitem" class="mini" aria-expanded="false">
+        <ul role="menu">
+          <li role="menuitem">
+            <a href="/docs/">Product Docs</a>
+          </li>
+          <li role="menuitem">
+            <a href="https://developers.digitalocean.com/documentation/">API Docs</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+      <li role="menuitem" aria-haspopup="true" tabindex="0">
+      <span class="expander">Sign in</span>
+        <div role="menuitem" class="mini" aria-expanded="false">
+          <header>Sign in to</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#navbar-community_icon"></use>
+              </svg>
+              <a id="log-in" href="/community/auth/digitalocean">Community</a>
+            </li>
+            <li role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="#navbar-control_panel_icon"></use>
+              </svg>
+              <a href="https://cloud.digitalocean.com/registrations/new">Control Panel</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+  </ul>
+
+  <ul role="menubar" class="primary">
+    <li role="menuitem" data-show="always" class="logo-square">
+      <a href="https://www.digitalocean.com/">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto">
+          <use xlink:href="#navbar-logomark"></use>
+        </svg>
+      </a>
+    </li>
+    <li role="menuitem" data-show="always">
+      <a title="DigitalOcean Community Home" class="home" href="/community">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="120px" height="24px"
+             shape-rendering="auto">
+          <use xlink:href="#navbar-community_logo"></use>
+        </svg>
+</a>    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+    </li>
+    <li role="menuitem">
+      <a data-activatable="true" href="/community/questions">Questions</a>
+    </li>
+    <li role="menuitem" aria-haspopup="true" class="mega_parent" tabindex="0">
+      <span class="expander">Get Involved</span>
+      <div role="menuitem" class="mega" aria-expanded="false">
+        <div class="section column">
+          <header>Participate</header>
+          <ul role="menu">
+            <li role="menuitem">
+              <a href="https://www.digitalocean.com/community/pages/hub-for-good" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#navbar-hubforgood"></use>
+                </svg>
+                <p>
+                  <strong>Hub for Good</strong>
+                  Supporting each other to make an impact
+                </p>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a class="with_image" href="/community/pages/write-for-digitalocean">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#navbar-write4do"></use>
+                </svg>
+                <p>
+                  <strong>Write for DigitalOcean</strong>
+                  You get paid, we donate to tech non-profits.
+                </p>
+</a>            </li>
+            <li role="menuitem">
+              <a href="https://hacktoberfest.digitalocean.com" class="with_image">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="#navbar-hacktoberfest"></use>
+                </svg>
+                <p>
+                  <strong>Hacktoberfest</strong>
+                  Contribute to Open Source
+                </p>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="section column">
+          <header>
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use xlink:href="#navbar-build"></use>
+            </svg>
+            Build with DigitalOcean
+          </header>
+          <ul role="menu" class="indent">
+            <li role="menuitem">
+              <a title="Community-built tools and integrations that use the DigitalOcean API" href="/community/tools">Community Tools and Integrations</a>
+            </li>
+            <li role="menuitem">
+              <a href="https://www.digitalocean.com/hatch/" title="Build your startup on DigitalOcean.">
+                Hatch Startup Program
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://marketplace.digitalocean.com/vendors/"
+                 title="List your open source One-Click Application in the DigitalOcean Marketplace">
+                Marketplace Partner Program
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://www.digitalocean.com/partners/solutions-partners/"
+                 title="Easily deploy & modernize your clients’ infrastructures with the Solutions Partner Program">
+                Solutions Partner Program
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://www.digitalocean.com/droplets-for-demos/"
+                 title="DigitalOcean credits to fund research for conference and meetup presentations">
+                Presentation Grants
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href="https://github.com/digitalocean"
+                 title="View all the open-source projects that DigitalOcean have on GitHub">
+                DigitalOcean on GitHub
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </li>
+    <li role="menuitem" data-show="mobile" data-flex="grow" class="right">
+      <a href="javascript:void(0);" data-toggle="dialog" data-target=".mobile_nav">
+        <span class="icon-menu-thin"></span>
+      </a>
+    </li>
+    <li role="menuitem" data-flex="grow">
+      <button id="q" class="search_button">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" shape-rendering="auto"
+               width="14px" height="14px">
+            <use xlink:href="#navbar-search"></use>
+          </svg>
+          Search DigitalOcean
+          <kbd>/</kbd>
+      </button>
+    </li>
+    <li role="menuitem">
+      <a class="button blue-button small-button" href="/community/auth/digitalocean?display=sessionless+register+button">Sign Up</a>
+    </li>
+  </ul>
+</nav>
+
+<header>
+  <div class="legacy-header ">
+    <div class="flash-container">
+      
+    </div>
+
+    <div class="wrapper">
+      
+    </div>
+  </div>
+</header>
+
+
+
+      
+
+      <div class='wrapper layout-wrapper'>
+
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  <div class="section-content section-content-growable content Tutorial-content content-has-mobile-image">
+      <img alt="How To Serve Django Applications with uWSGI and Nginx on Ubuntu 16.04" title="How To Serve Django Applications with uWSGI and Nginx on Ubuntu 16.04" class="tutorial-image-mobile" src="https://community-cdn-digitalocean-com.global.ssl.fastly.net/variants/DrUZ3Cwx3tKYUUad6BL9AQJZ/035575f2985fe451d86e717d73691e533a1a00545d7230900ed786341dc3c882" />
+
+
+    <div class="container tutorial-header">
+      <span class="featured-items-right-bar-container">
+</span>
+
+
+      <img alt="How To Serve Django Applications with uWSGI and Nginx on Ubuntu 16.04" title="How To Serve Django Applications with uWSGI and Nginx on Ubuntu 16.04" class="tutorial-image" src="https://community-cdn-digitalocean-com.global.ssl.fastly.net/variants/DrUZ3Cwx3tKYUUad6BL9AQJZ/035575f2985fe451d86e717d73691e533a1a00545d7230900ed786341dc3c882" />
+      <h4 class="eyebrow">Tutorial</h4>
+      <h1 class="content-title Tutorial-header">How To Serve Django Applications with uWSGI and Nginx on Ubuntu 16.04</h1>
+
+      <span class="meta-section tags">
+  <a class="tag" href="/community/tags/ubuntu">Ubuntu</a><a class="tag" href="/community/tags/django">Django</a><a class="tag" href="/community/tags/python-frameworks">Python Frameworks</a><a class="tag" href="/community/tags/ubuntu-16-04">Ubuntu 16.04</a>
+</span>
+
+
+      <div class="tutorial-authors-translations">
+        <div class="tutorial-authors">
+          <div class="component-collaborators-container">
+  <ul class="component-collaborators-content">
+        <li class="collaborator-byline-avatar">
+          <a href="/community/users/jellingwood">
+            <img alt="jellingwood" class="avatar avatar-large" src="https://secure.gravatar.com/avatar/60d901f61a6146e14a3e989bc1f4ef11?secure=true&d=identicon" width="80" height="80" />
+</a>        </li>
+
+    <li class="collaborators-byline-data">
+        <p class="names">By <a href="/community/users/jellingwood">Justin Ellingwood</a></p>
+
+      <span class="meta-section date-views">
+  <span class="meta-section timestamp"><span class="tutorial-date-text">Posted</span><span class="tutorial-date">May 16, 2016</span></span>
+  <span class="meta-section versions"><span class="versions-count">11</span><span> versions</span></span>
+</span>
+
+    </li>
+  </ul>
+</div>
+
+        </div>
+
+      </div>
+    </div>
+
+    
+
+
+
+<div class="content-body tutorial-content" data-growable-markdown>
+  
+  <h3 id="introduction">Introduction</h3>
+
+<p>Django is a powerful web framework that can help you get your Python application or website off the ground.  Django includes a simplified development server for testing your code locally, but for anything even slightly production related, a more secure and powerful web server is required.</p>
+
+<p>In this guide, we will demonstrate how to install and configure some components on Ubuntu 16.04 to support and serve Django applications.  We will configure the uWSGI application container server to interface with our applications.  We will then set up Nginx to reverse proxy to uWSGI, giving us access to its security and performance features to serve our apps.</p>
+
+<h2 id="prerequisites-and-goals">Prerequisites and Goals</h2>
+
+<p>In order to complete this guide, you should have a fresh Ubuntu 16.04 server instance with a non-root user with <code>sudo</code> privileges configured.  You can learn how to set this up by running through our <a href="https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-16-04">initial server setup guide</a>.</p>
+
+<p>We will be installing Django within two different virtual environments.  This will allow your projects and their requirements to be handled separately.  We will be creating two sample projects so that we can run through the steps in a multi-project environment.</p>
+
+<p>Once we have our applications, we will install and configure the uWSGI application server.  This will serve as an interface to our applications which will translate client requests using HTTP to Python calls that our application can process.  We will then set up Nginx in front of uWSGI to take advantage of its high performance connection handling mechanisms and its easy-to-implement security features.</p>
+
+<p>Let&rsquo;s get started.</p>
+
+<h2 id="install-and-configure-virtualenv-and-virtualenvwrapper">Install and Configure VirtualEnv and VirtualEnvWrapper</h2>
+
+<p>We will be installing our Django projects in their own virtual environments to isolate the requirements for each.  To do this, we will be installing <code>virtualenv</code>, which can create Python virtual environments, and <code>virtualenvwrapper</code>, which adds some usability improvements to the <code>virtualenv</code> work flow.</p>
+
+<p>We will be installing both of these components using <code>pip</code>, the Python package manager.  We can install this utility from the Ubuntu repositories.</p>
+
+<p>If you are building your Django projects with <strong>Python 2</strong>, type:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo apt-get update
+</li><li class="line" data-prefix="$">sudo apt-get install python-pip
+</li></ul></code></pre>
+<p>If you are using <strong>Python 3</strong>, type:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo apt-get update
+</li><li class="line" data-prefix="$">sudo apt-get install python3-pip
+</li></ul></code></pre>
+<p>Now that you have <code>pip</code> installed, we can install <code>virtualenv</code> and <code>virtualenvwrapper</code> globally.  We will also upgrade <code>pip</code> to the latest version using <code>pip</code> itself.</p>
+
+<p>If you are using <strong>Python 2</strong>, type:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo -H pip install --upgrade pip
+</li><li class="line" data-prefix="$">sudo -H pip install virtualenv virtualenvwrapper
+</li></ul></code></pre>
+<p>If you are using <strong>Python 3</strong>, type:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo -H pip3 install --upgrade pip
+</li><li class="line" data-prefix="$">sudo -H pip3 install virtualenv virtualenvwrapper
+</li></ul></code></pre>
+<p>With these components installed, we can now configure our shell with the information it needs to work with the <code>virtualenvwrapper</code> script.  Our virtual environments will all be placed within a directory in our home folder called <code>Env</code> for easy access.  This is configured through an environmental variable called <code>WORKON_HOME</code>.  We can add this to our shell initialization script and can source the virtual environment wrapper script.</p>
+
+<p>If you are using <strong>Python 3</strong> and the <code>pip3</code> command, you will have to add an additional line to your shell initialization script as well:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3" &gt;&gt; ~/.bashrc
+</li></ul></code></pre>
+<p>Regardless of which version of Python you are using, you need to run the following commands:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">echo "export WORKON_HOME=~/Env" &gt;&gt; ~/.bashrc
+</li><li class="line" data-prefix="$">echo "source /usr/local/bin/virtualenvwrapper.sh" &gt;&gt; ~/.bashrc
+</li></ul></code></pre>
+<p>Now, source your shell initialization script so that you can use this functionality in your current session:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">source ~/.bashrc
+</li></ul></code></pre>
+<p>You should now have directory called <code>Env</code> in your home folder which will hold virtual environment information.</p>
+
+<h2 id="create-django-projects">Create Django Projects</h2>
+
+<p>Now that we have our virtual environment tools, we will create two virtual environments, install Django in each, and start two projects.</p>
+
+<h3 id="create-the-first-project">Create the First Project</h3>
+
+<p>We can create a virtual environment easily by using some commands that the <code>virtualenvwrapper</code> script makes available to us.</p>
+
+<p>Create your first virtual environment with the name of your first site or project by typing:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">mkvirtualenv <span class="highlight">firstsite</span>
+</li></ul></code></pre>
+<p>This will create a virtual environment, install Python and <code>pip</code> within it, and activate the environment.  Your prompt will change to indicate that you are now operating within your new virtual environment.  It will look something like this: <code>(<span class="highlight">firstsite</span>)<span class="highlight">user</span>@<span class="highlight">hostname</span>:~$</code>.  The value in the parentheses is the name of your virtual environment.  Any software installed through <code>pip</code> will now be installed into the virtual environment instead of on the global system.  This allows us to isolate our packages on a per-project basis.</p>
+
+<p>Our first step will be to install Django itself.  We can use <code>pip</code> for this without <code>sudo</code> since we are installing this locally in our virtual environment:</p>
+<pre class="code-pre custom_prefix prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="(firstsite) $">pip install django
+</li></ul></code></pre>
+<p>With Django installed, we can create our first sample project by typing:</p>
+<pre class="code-pre custom_prefix prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="(firstsite) $">cd ~
+</li><li class="line" data-prefix="(firstsite) $">django-admin.py startproject <span class="highlight">firstsite</span>
+</li></ul></code></pre>
+<p>This will create a directory called <code><span class="highlight">firstsite</span></code> within your home directory.  Within this is a management script used to handle various aspects of the project and another directory of the same name used to house the actual project code. </p>
+
+<p>Move into the first level directory so that we can begin setting up the minimum requirements for our sample project.</p>
+<pre class="code-pre custom_prefix prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="(firstsite) $">cd ~/<span class="highlight">firstsite</span>
+</li></ul></code></pre>
+<p>Begin by migrating the database to initialize the SQLite database that our project will use.  You can set up an alternative database for your application if you wish, but this is outside of the scope of this guide:</p>
+<pre class="code-pre custom_prefix prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="(firstsite) $">~/<span class="highlight">firstsite</span>/manage.py migrate
+</li></ul></code></pre>
+<p>You should now have a database file called <code>db.sqlite3</code> in your project directory.  Now, we can create an administrative user by typing:</p>
+<pre class="code-pre custom_prefix prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="(firstsite) $">~/<span class="highlight">firstsite</span>/manage.py createsuperuser
+</li></ul></code></pre>
+<p>At this point, your project directory (<code>~/<span class="highlight">firstsite</span></code> in our case) should have the following content:</p>
+
+<ul>
+<li><code>~/firstsite/manage.py</code>: A Django project management script.</li>
+<li><code>~/firstsite/firstsite/</code>: The Django project package.  This should contain the <code>__init__.py</code>, <code>settings.py</code>, <code>urls.py</code>, and <code>wsgi.py</code> files.</li>
+<li><code>~/firstsite/db.sqlite3</code>: The SQLite database file used to store your site information.</li>
+</ul>
+
+<p>Next, open the settings file for the project with your text editor:</p>
+<pre class="code-pre custom_prefix prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="(firstsite) $">nano ~/<span class="highlight">firstsite</span>/<span class="highlight">firstsite</span>/settings.py
+</li></ul></code></pre>
+<p>Start by locating the <code>ALLOWED_HOSTS</code> directive.  This defines a list of the server&rsquo;s addresses or domain names that may be used to connect to the Django instance.  Any incoming requests with a <strong>Host</strong> header that is not in this list will raise an exception.  Django requires that you set this to prevent a certain class of security vulnerability.</p>
+
+<p>In the square brackets, list the IP addresses or domain names that are associated with your Django server.  Each item should be listed in quotations with entries separated by a comma.  If you wish requests for an entire domain and any subdomains, prepend a period to the beginning of the entry.  In the snippet below, there are a few commented out examples used to demonstrate:</p>
+<div class="code-label " title="~/firstsite/firstsite/settings.py">~/firstsite/firstsite/settings.py</div><pre class="code-pre "><code class="code-highlight language-bash">. . .
+# The simplest case: just add the domain name(s) and IP addresses of your Django server
+# ALLOWED_HOSTS = [ 'example.com', '203.0.113.5']
+# To respond to 'example.com' and any subdomains, start the domain with a dot
+# ALLOWED_HOSTS = ['.example.com', '203.0.113.5']
+ALLOWED_HOSTS = ['<span class="highlight">your_server_domain_or_IP</span>', '<span class="highlight">second_domain_or_IP</span>', <span class="highlight">. . .</span>]
+</code></pre>
+<p>Since we will be setting up Nginx to serve our site, we need to configure a directory which will hold our site&rsquo;s static assets.  This will allow Nginx to serve these directly, which will have a positive impact on performance.  We will tell Django to place these into a directory called <code>static</code> in our project&rsquo;s base directory.  Add this line to the bottom of the file to configure this behavior:</p>
+<div class="code-label " title="~/firstsite/firstsite/settings.py">~/firstsite/firstsite/settings.py</div><pre class="code-pre "><code class="code-highlight language-bash">. . .
+STATIC_URL = '/static/'
+<span class="highlight">STATIC_ROOT = os.path.join(BASE_DIR, 'static/')</span>
+</code></pre>
+<p>Save and close the file when you are finished.  Now, collect our site&rsquo;s static elements and place them within that directory by typing:</p>
+<pre class="code-pre custom_prefix prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="(firstsite) $">~/<span class="highlight">firstsite</span>/manage.py collectstatic
+</li></ul></code></pre>
+<p>You may be asked to type &ldquo;yes&rdquo; to confirm the action and collect the static content.  There will be a new directory called <code>static</code> in your project directory.</p>
+
+<p>Next, we can open a port so that we can access the Django development server.  If you followed the initial server setup guide, you should have a UFW firewall enabled.  Allow connections to port 8080 by typing:</p>
+<pre class="code-pre custom_prefix prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="(firstsite) $">sudo ufw allow 8080
+</li></ul></code></pre>
+<p>With all of that out of the way, we can test our project by temporarily starting the development server.  Type:</p>
+<pre class="code-pre custom_prefix prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="(firstsite) $">~/<span class="highlight">firstsite</span>/manage.py runserver 0.0.0.0:8080
+</li></ul></code></pre>
+<p>This will start up the development server on port <code>8080</code>.  Visit your server&rsquo;s domain name or IP address followed by <code>8080</code> in your browser:</p>
+<pre class="code-pre "><code>http://<span class="highlight">server_domain_or_IP</span>:8080
+</code></pre>
+<p>You should see a page that looks like this:</p>
+
+<p><img src="https://assets.digitalocean.com/articles/django_uwsgi_nginx_1404/sample_site.png" alt="Django sample site"></p>
+
+<p>Add <code>/admin</code> to the end of the URL in your browser&rsquo;s address bar and you will be taken to the admin login page:</p>
+
+<p><img src="https://assets.digitalocean.com/articles/django_uwsgi_nginx_1404/admin_login.png" alt="Django admin login"></p>
+
+<p>Using the administrative login credentials you selected with the <code>createsuperuser</code> command, log into the server.  You will then have access to the administration interface:</p>
+
+<p><img src="https://assets.digitalocean.com/articles/django_uwsgi_nginx_1404/admin_interface.png" alt="Django admin interface"></p>
+
+<p>After testing this functionality out, stop the development server by typing <strong>CTRL-C</strong> in your terminal.  We can now move on to our second project.</p>
+
+<h3 id="create-the-second-project">Create the Second Project</h3>
+
+<p>The second project will be created in exactly the same way as the first.  We will abridge the explanation in this section, seeing as how you have already completed this once.</p>
+
+<p>Move back to your home directory and create a second virtual environment for your new project.  Install Django inside of this new environment once it is activated:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">cd ~
+</li><li class="line" data-prefix="$">mkvirtualenv <span class="highlight">secondsite</span>
+</li><li class="line" data-prefix="$">pip install django
+</li></ul></code></pre>
+<p>The new environment will be created <em>and</em> changed to, leaving your previous virtual environment.  This Django instance is entirely separate from the other one you configured.  This allows you to manage them independently and customize as necessary.</p>
+
+<p>Create the second project and move into the project directory:</p>
+<pre class="code-pre custom_prefix prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="(secondsite) $">cd ~
+</li><li class="line" data-prefix="(secondsite) $">django-admin.py startproject <span class="highlight">secondsite</span>
+</li><li class="line" data-prefix="(secondsite) $">cd ~/<span class="highlight">secondsite</span>
+</li></ul></code></pre>
+<p>Initialize the database and create an administrative user:</p>
+<pre class="code-pre custom_prefix prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="(secondsite) $">~/<span class="highlight">secondsite</span>/manage.py migrate
+</li><li class="line" data-prefix="(secondsite) $">~/<span class="highlight">secondsite</span>/manage.py createsuperuser
+</li></ul></code></pre>
+<p>Open the settings file:</p>
+<pre class="code-pre custom_prefix prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="(secondsite) $">nano ~/<span class="highlight">secondsite</span>/<span class="highlight">secondsite</span>/settings.py
+</li></ul></code></pre>
+<p>Set the <code>ALLOWED_HOSTS</code> to your second project&rsquo;s domain, the server&rsquo;s IP address, or both, just like you did with the first project:</p>
+<pre class="code-pre "><code>ALLOWED_HOSTS = ['<span class="highlight">second_project_domain_or_IP</span>', '<span class="highlight">another_domain_or_IP</span>', <span class="highlight">. . .</span>]
+</code></pre>
+<p>Add the location for the static files, just as you did in the previous project:</p>
+<div class="code-label " title="~/secondsite/secondsite/settings.py">~/secondsite/secondsite/settings.py</div><pre class="code-pre "><code class="code-highlight language-bash">. . .
+STATIC_URL = '/static/'
+<span class="highlight">STATIC_ROOT = os.path.join(BASE_DIR, 'static/')</span>
+</code></pre>
+<p>Save and close the file.  Now, collect the static elements into that directory by typing:</p>
+<pre class="code-pre custom_prefix prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="(secondsite) $">~/<span class="highlight">secondsite</span>/manage.py collectstatic
+</li></ul></code></pre>
+<p>Finally, fire up the development server to test out the site:</p>
+<pre class="code-pre custom_prefix prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="(secondsite) $">~/<span class="highlight">secondsite</span>/manage.py runserver 0.0.0.0:8080
+</li></ul></code></pre>
+<p>You should check the regular site at:</p>
+<pre class="code-pre "><code>http://<span class="highlight">server_domain_or_IP</span>:8080
+</code></pre>
+<p>Also log into the admin site:</p>
+<pre class="code-pre "><code>http://<span class="highlight">server_domain_or_IP</span>:8080/admin
+</code></pre>
+<p>When you&rsquo;ve confirmed that everything is working as expected, type <strong>CTRL-C</strong> in your terminal to stop the development server.</p>
+
+<h3 id="backing-out-of-the-virtual-environment">Backing Out of the Virtual Environment</h3>
+
+<p>Since we are now done with the Django portion of the guide, we can deactivate our second virtual environment:</p>
+<pre class="code-pre custom_prefix prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="(secondsite) $">deactivate
+</li></ul></code></pre>
+<p>If you need to work on either of your Django sites again, you should reactivate their respective environments.  You can do that by using the <code>workon</code> command:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">workon <span class="highlight">firstsite</span>
+</li></ul></code></pre>
+<p>Or:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">workon <span class="highlight">secondsite</span>
+</li></ul></code></pre>
+<p>Again, deactivate when you are finished working on your sites:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">deactivate
+</li></ul></code></pre>
+<p>We can now move on to configuring the application server.</p>
+
+<h2 id="setting-up-the-uwsgi-application-server">Setting up the uWSGI Application Server</h2>
+
+<p>Now that we have two Django projects set up and ready to go, we can configure uWSGI.  uWSGI is an application server that can communicate with applications over a standard interface called WSGI.  To learn more about this, read <a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-uwsgi-and-nginx-to-serve-python-apps-on-ubuntu-14-04#definitions-and-concepts">this section</a> of our guide on setting up uWSGI and Nginx on Ubuntu 14.04.</p>
+
+<h3 id="installing-uwsgi">Installing uWSGI</h3>
+
+<p>Unlike the guide linked above, in this tutorial, we will be installing uWSGI globally.  This will create less friction in handling multiple Django projects.  Before we can install uWSGI, we need the Python development files that the software relies on.  We can install this directly from Ubuntu&rsquo;s repositories.</p>
+
+<p>If you are using Django with <strong>Python 2</strong>, type:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo apt-get install python-dev
+</li></ul></code></pre>
+<p>If you are using <strong>Python 3</strong>, type:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo apt-get install python3-dev
+</li></ul></code></pre>
+<p>Now that the development files are available, we can install uWSGI globally through <code>pip</code>.</p>
+
+<p>If you are using <strong>Python 2</strong>, type:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo -H pip install uwsgi
+</li></ul></code></pre>
+<p>If you are using <strong>Python 3</strong>, type:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo -H pip3 install uwsgi
+</li></ul></code></pre>
+<p>We can quickly test this application server by passing it the information for one of our sites.  For instance, we can tell it to serve our first project by typing:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">uwsgi --http :8080 --home /home/<span class="highlight">sammy</span>/Env/<span class="highlight">firstsite</span> --chdir /home/<span class="highlight">sammy</span>/<span class="highlight">firstsite</span> -w <span class="highlight">firstsite</span>.wsgi
+</li></ul></code></pre>
+<p>Here, we&rsquo;ve told uWSGI to use our virtual environment located in our <code>~/Env</code> directory, to change to our project&rsquo;s directory, and to use the <code>wsgi.py</code> file stored within our inner <code><span class="highlight">firstsite</span></code> directory to serve the file (using the <code>firstsite.wsgi</code> Python module syntax).  For our demonstration, we told it to serve HTTP on port <code>8080</code>.</p>
+
+<p>If you go to server&rsquo;s domain name or IP address in your browser, followed by <code>:8080</code>, you will see your site again (the static elements in the <code>/admin</code> interface, like CSS, won&rsquo;t work yet).  When you are finished testing out this functionality, type CTRL-C in the terminal.</p>
+
+<h3 id="creating-configuration-files">Creating Configuration Files</h3>
+
+<p>Running uWSGI from the command line is useful for testing, but isn&rsquo;t particularly helpful for an actual deployment.  Instead, we will run uWSGI in &ldquo;Emperor mode&rdquo;, which allows a master process to manage separate applications automatically given a set of configuration files.</p>
+
+<p>Create a directory that will hold your configuration files.  Since this is a global process, we will create a directory called <code>/etc/uwsgi/sites</code> to store our configuration files:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo mkdir -p /etc/uwsgi/sites
+</li></ul></code></pre>
+<p>In this directory, we will place our configuration files.  We need a configuration file for each of the projects we are serving.  The uWSGI process can take configuration files in a variety of formats, but we will use <code>.ini</code> files due to their simplicity.</p>
+
+<p>Create a file for your first project and open it in your text editor:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo nano /etc/uwsgi/sites/<span class="highlight">firstsite</span>.ini
+</li></ul></code></pre>
+<p>Inside, we must begin with the <code>[uwsgi]</code> section header.  All of our information will go beneath this header.  We are also going to use variables to make our configuration file more reusable.  After the header, set a variable called <code>project</code> with the name of your first project.  Add a variable called <code>uid</code> which holds your <code>sudo</code> username.</p>
+
+<p>We will also add a variable called <code>base</code> with the path to your user&rsquo;s home directory.  This will be constructed from the username we set using the <code>%(variable_name)</code> syntax.  This will be replaced by the value of the variable when the config is read:</p>
+<div class="code-label " title="/etc/uwsgi/sites/firstsite.ini">/etc/uwsgi/sites/firstsite.ini</div><pre class="code-pre "><code class="code-highlight language-bash">[uwsgi]
+project = <span class="highlight">firstsite</span>
+uid = <span class="highlight">sammy</span>
+base = /home/%(uid)
+</code></pre>
+<p>Next, we need to configure uWSGI so that it handles our project correctly.  We need to change into the root project directory by setting the <code>chdir</code> option.  We can combine the home directory and project name using the same variable syntax.</p>
+
+<p>In a similar way, we will indicate the virtual environment for our project.  By setting the module, we can indicate exactly how to interface with our project (by importing the &ldquo;application&rdquo; callable from the <code>wsgi.py</code> file within our inner project directory).  The configuration of these items will look like this:</p>
+<div class="code-label " title="/etc/uwsgi/sites/firstsite.ini">/etc/uwsgi/sites/firstsite.ini</div><pre class="code-pre "><code class="code-highlight language-bash">[uwsgi]
+project = <span class="highlight">firstsite</span>
+uid = <span class="highlight">sammy</span>
+base = /home/%(uid)
+
+chdir = %(base)/%(project)
+home = %(base)/Env/%(project)
+module = %(project).wsgi:application
+</code></pre>
+<p>We want to create a master process with 5 workers.  We can do this by adding this:</p>
+<div class="code-label " title="/etc/uwsgi/sites/firstsite.ini">/etc/uwsgi/sites/firstsite.ini</div><pre class="code-pre "><code class="code-highlight language-bash">[uwsgi]
+project = <span class="highlight">firstsite</span>
+uid = <span class="highlight">sammy</span>
+base = /home/%(uid)
+
+chdir = %(base)/%(project)
+home = %(base)/Env/%(project)
+module = %(project).wsgi:application
+
+master = true
+processes = 5
+</code></pre>
+<p>Next we need to specify how uWSGI should listen for connections.  In our test of uWSGI, we used HTTP and a network port.  However, since we are going to be using Nginx as a reverse proxy, we have better options. </p>
+
+<p>Instead of using a network port, since all of the components are operating on a single server, we can use a Unix socket.  This is more secure and offers better performance.  This socket will not use HTTP, but instead will implement uWSGI&rsquo;s <code>uwsgi</code> protocol, which is a fast binary protocol for designed for communicating with other servers.  Nginx can natively proxy using the <code>uwsgi</code> protocol, so this is our best choice.</p>
+
+<p>We will also modify the ownership and permissions of the socket because we will be giving the web server write access.  We&rsquo;ll set the <code>vacuum</code> option so that the socket file will be automatically cleaned up when the service is stopped:</p>
+<div class="code-label " title="/etc/uwsgi/sites/firstsite.ini">/etc/uwsgi/sites/firstsite.ini</div><pre class="code-pre "><code class="code-highlight language-bash">[uwsgi]
+project = <span class="highlight">firstsite</span>
+uid = <span class="highlight">sammy</span>
+base = /home/%(uid)
+
+chdir = %(base)/%(project)
+home = %(base)/Env/%(project)
+module = %(project).wsgi:application
+
+master = true
+processes = 5
+
+socket = /run/uwsgi/%(project).sock
+chown-socket = %(uid):www-data
+chmod-socket = 660
+vacuum = true
+</code></pre>
+<p>With this, our first project&rsquo;s uWSGI configuration is complete.  Save and close the file.</p>
+
+<p>The advantage of setting up the file using variables is that it makes it incredibly simple to reuse.  Copy your first project&rsquo;s configuration file to use as a base for your second configuration file:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo cp /etc/uwsgi/sites/<span class="highlight">firstsite</span>.ini /etc/uwsgi/sites/<span class="highlight">secondsite</span>.ini
+</li></ul></code></pre>
+<p>Open the second configuration file with your text editor:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo nano /etc/uwsgi/sites/<span class="highlight">secondsite</span>.ini
+</li></ul></code></pre>
+<p>We only need to change a single value in this file in order to make it work for our second project.  Modify the <code>project</code> variable with the name you&rsquo;ve used for your second project:</p>
+<div class="code-label " title="/etc/uwsgi/sites/secondsite.ini">/etc/uwsgi/sites/secondsite.ini</div><pre class="code-pre "><code class="code-highlight language-bash">[uwsgi]
+project = <span class="highlight">secondsite</span>
+uid = <span class="highlight">sammy</span>
+base = /home/%(uid)
+
+chdir = %(base)/%(project)
+home = %(base)/Env/%(project)
+module = %(project).wsgi:application
+
+master = true
+processes = 5
+
+socket = /run/uwsgi/%(project).sock
+chown-socket = %(uid):www-data
+chmod-socket = 660
+vacuum = true
+</code></pre>
+<p>Save and close the file when you are finished.  Your second project should be ready to go now.</p>
+
+<h3 id="create-a-systemd-unit-file-for-uwsgi">Create a systemd Unit File for uWSGI</h3>
+
+<p>We now have the configuration files we need to serve our Django projects, but we still haven&rsquo;t automated the process.  Next, we&rsquo;ll create a systemd unit file to manage the uWSGI emperor process and automatically start uWSGI at boot.</p>
+
+<p>We will create the unit file  in the <code>/etc/systemd/system</code> directory, where administrator-created unit files are kept.  We will call our file <code>uwsgi.service</code>:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo nano /etc/systemd/system/uwsgi.service
+</li></ul></code></pre>
+<p>Start with the <code>[Unit]</code> section, which is used to specify metadata and ordering information.  We&rsquo;ll simply put a description of our service here:</p>
+<div class="code-label " title="/etc/systemd/system/uwsgi.service">/etc/systemd/system/uwsgi.service</div><pre class="code-pre "><code class="code-highlight language-bash">[Unit]
+Description=uWSGI Emperor service
+</code></pre>
+<p>Next, we will open up the <code>[Service]</code> section.  We&rsquo;ll use the <code>ExecStartPre</code> directive to set up the pieces we need to run our server.  This will make sure the <code>/run/uwsgi</code> directory is created and that our normal user owns it with the <code>www-data</code> group as the group owner.  Both <code>mkdir</code> with the <code>-p</code> flag and the <code>chown</code> command return successfully even if their operation is not needed.  This is what we want.</p>
+
+<p>For the actual start command, specified by the <code>ExecStart</code> directive, we will point to the <code>uwsgi</code> executable.  We will tell it to run in &ldquo;Emperor mode&rdquo;, allowing it to manage multiple applications using the files it finds in <code>/etc/uwsgi/sites</code>.  We will also add the pieces needed for systemd to correctly manage the process.  These are taken from the uWSGI documentation <a href="http://uwsgi-docs.readthedocs.io/en/latest/Systemd.html">here</a>.</p>
+<div class="code-label " title="/etc/systemd/system/uwsgi.service">/etc/systemd/system/uwsgi.service</div><pre class="code-pre "><code class="code-highlight language-bash">[Unit]
+Description=uWSGI Emperor service
+
+[Service]
+ExecStartPre=/bin/bash -c 'mkdir -p /run/uwsgi; chown <span class="highlight">sammy</span>:www-data /run/uwsgi'
+ExecStart=/usr/local/bin/uwsgi --emperor /etc/uwsgi/sites
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+NotifyAccess=all
+</code></pre>
+<p>Now, all we need to do is add the <code>[Install]</code> section.  This allows us to specify when the service should be automatically started.  We will tie our service to the multi-user system state.  Whenever the system is set up for multiple users (the normal operating condition), our service will be activated:</p>
+<div class="code-label " title="/etc/systemd/system/uwsgi.service">/etc/systemd/system/uwsgi.service</div><pre class="code-pre "><code class="code-highlight language-bash">[Unit]
+Description=uWSGI Emperor service
+
+[Service]
+ExecStartPre=/bin/bash -c 'mkdir -p /run/uwsgi; chown <span class="highlight">sammy</span>:www-data /run/uwsgi'
+ExecStart=/usr/local/bin/uwsgi --emperor /etc/uwsgi/sites
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+<p>When you are finished, save and close the file.</p>
+
+<p>We will be unable to start the service successfully at this point because it relies on the <code>www-data</code> user being available.  We will have to wait to start the uWSGI service until after Nginx is installed.</p>
+
+<h2 id="install-and-configure-nginx-as-a-reverse-proxy">Install and Configure Nginx as a Reverse Proxy</h2>
+
+<p>With uWSGI configured and ready to go, we can now install and configure Nginx as our reverse proxy.  This can be downloaded from Ubuntu&rsquo;s default repositories:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo apt-get install nginx
+</li></ul></code></pre>
+<p>Once Nginx is installed, we can go ahead and create a server block configuration file for each of our projects.  Start with the first project by creating a server block configuration file:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo nano /etc/nginx/sites-available/<span class="highlight">firstsite</span>
+</li></ul></code></pre>
+<p>Inside, we can start our server block by indicating the port number and domain name where our first project should be accessible.  The <code>server_name</code> block <em>must</em> match one of the server&rsquo;s domain names or its IP address or else the default Nginx page may be used instead.  We&rsquo;ll assume that you have a domain name for each:</p>
+<div class="code-label " title="/etc/nginx/sites-available/firstsite">/etc/nginx/sites-available/firstsite</div><pre class="code-pre "><code class="code-highlight language-bash">server {
+    listen 80;
+    server_name <span class="highlight">firstsite</span>.com www.<span class="highlight">firstsite</span>.com;
+}
+</code></pre>
+<p>Next, we can tell Nginx not to worry if it can&rsquo;t find a favicon.  We will also point it to the location of our static files directory where we collected our site&rsquo;s static elements:</p>
+<div class="code-label " title="/etc/nginx/sites-available/firstsite">/etc/nginx/sites-available/firstsite</div><pre class="code-pre "><code class="code-highlight language-bash">server {
+    listen 80;
+    server_name <span class="highlight">firstsite</span>.com www.<span class="highlight">firstsite</span>.com;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        root /home/<span class="highlight">sammy</span>/<span class="highlight">firstsite</span>;
+    }
+}
+</code></pre>
+<p>Next we can create a catch-all location block that will pass all additional queries straight to our application.  We will include the <code>uwsgi</code> parameters found in the <code>/etc/nginx/uwsgi_params</code> and pass the traffic to the socket that the uWSGI server sets up:</p>
+<div class="code-label " title="/etc/nginx/sites-available/firstsite">/etc/nginx/sites-available/firstsite</div><pre class="code-pre "><code class="code-highlight language-bash">server {
+    listen 80;
+    server_name <span class="highlight">firstsite</span>.com www.<span class="highlight">firstsite</span>.com;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        root /home/<span class="highlight">sammy</span>/<span class="highlight">firstsite</span>;
+    }
+
+    location / {
+        include         uwsgi_params;
+        uwsgi_pass      unix:/run/uwsgi/<span class="highlight">firstsite</span>.sock;
+    }
+}
+</code></pre>
+<p>With that, our first server block is complete.</p>
+
+<p>We will use this as a basis for our second project&rsquo;s Nginx configuration file.  Copy it over now:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo cp /etc/nginx/sites-available/<span class="highlight">firstsite</span> /etc/nginx/sites-available/<span class="highlight">secondsite</span>
+</li></ul></code></pre>
+<p>Open the new file in your text editor:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo nano /etc/nginx/sites-available/<span class="highlight">secondsite</span>
+</li></ul></code></pre>
+<p>Here, you&rsquo;ll have to change any reference to <code><span class="highlight">firstsite</span></code> with a reference to <code><span class="highlight">secondsite</span></code>.  You&rsquo;ll also have to modify the <code>server_name</code> so that your second project responds to a different domain name or change the port if you don&rsquo;t have more than one domain name or IP address.  When you are finished, it will look something like this:</p>
+<div class="code-label " title="/etc/nginx/sites-available/secondsite">/etc/nginx/sites-available/secondsite</div><pre class="code-pre "><code class="code-highlight language-bash">server {
+    listen 80;
+    server_name <span class="highlight">secondsite</span>.com www.<span class="highlight">secondsite</span>.com;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        root /home/<span class="highlight">sammy</span>/<span class="highlight">secondsite</span>;
+    }
+
+    location / {
+        include         uwsgi_params;
+        uwsgi_pass      unix:/run/uwsgi/<span class="highlight">secondsite</span>.sock;
+    }
+}
+</code></pre>
+<p>Save and close the file when you are finished.</p>
+
+<p>Next, link both of your new configuration files to Nginx&rsquo;s <code>sites-enabled</code> directory to enable them:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo ln -s /etc/nginx/sites-available/<span class="highlight">firstsite</span> /etc/nginx/sites-enabled
+</li><li class="line" data-prefix="$">sudo ln -s /etc/nginx/sites-available/<span class="highlight">secondsite</span> /etc/nginx/sites-enabled
+</li></ul></code></pre>
+<p>Check the configuration syntax by typing:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo nginx -t
+</li></ul></code></pre>
+<p>If no syntax errors are detected, you can restart your Nginx service to load the new configuration:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo systemctl restart nginx
+</li></ul></code></pre>
+<p>If you remember from earlier, we never actually started the uWSGI server.  Do that now by typing:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo systemctl start uwsgi
+</li></ul></code></pre>
+<p>Let&rsquo;s delete the UFW rule to port <code>8080</code> and instead allow access to our Nginx server:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo ufw delete allow 8080
+</li><li class="line" data-prefix="$">sudo ufw allow 'Nginx Full'
+</li></ul></code></pre>
+<p>You should now be able to reach your two projects by going to their respective domain names.  Both the public and administrative interfaces should work as expected.</p>
+
+<p>If this goes well, you can enable both of the services to start automatically at boot by typing:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo systemctl enable nginx
+</li><li class="line" data-prefix="$">sudo systemctl enable uwsgi
+</li></ul></code></pre>
+<div class='code-label notes-and-warnings note' title='Note'>Note</div><span class='note'><p>
+
+After configuring Nginx, the next step should be securing traffic to the server using SSL/TLS.  This is important because without it, all information, including passwords are sent over the network in plain text.</p>
+
+<p>If you have a domain name, the easiest way get an SSL certificate to secure your traffic is using Let&rsquo;s Encrypt.  Follow <a href="https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04">this guide</a> to set up Let&rsquo;s Encrypt with Nginx on Ubuntu 16.04.</p>
+
+<p>If you do not have a domain name, you can still secure your site for testing and learning with a <a href="https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-16-04">self-signed SSL certificate</a>.<br></p></span>
+
+<h2 id="troubleshooting-nginx-and-uwsgi">Troubleshooting Nginx and uWSGI</h2>
+
+<p>If you are not able to access your application, you will need to troubleshoot your installation.</p>
+
+<h3 id="nginx-is-showing-the-default-page-instead-of-the-django-application">Nginx Is Showing the Default Page Instead of the Django Application</h3>
+
+<p>If Nginx displays the default page instead of proxying to your application, it usually means that you need to adjust the <code>server_name</code> within the <code>/etc/nginx/sites-available/<span class="highlight">firstsite</span></code> file to point to your server&rsquo;s IP address or domain name.</p>
+
+<p>Nginx uses the <code>server_name</code> to determine which server block to use to respond to requests.  If you are seeing the default Nginx page, it is a sign that Nginx wasn&rsquo;t able to match the request to a sever block explicitly, so it&rsquo;s falling back on the default block defined in <code>/etc/nginx/sites-available/default</code>.</p>
+
+<p>The <code>server_name</code> in your project&rsquo;s server block must be more specific than the one in the default server block to be selected.</p>
+
+<h3 id="nginx-is-displaying-a-502-bad-gateway-error-instead-of-the-django-application">Nginx Is Displaying a 502 Bad Gateway Error Instead of the Django Application</h3>
+
+<p>A 502 error indicates that Nginx is unable to successfully proxy the request.  A wide range of configuration problems express themselves with a 502 error, so more information is required to troubleshoot properly.</p>
+
+<p>The primary place to look for more information is in Nginx&rsquo;s error logs.  Generally, this will tell you what conditions caused problems during the proxying event.  Follow the Nginx error logs by typing:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo tail -F /var/log/nginx/error.log
+</li></ul></code></pre>
+<p>Now, make another request in your browser to generate a fresh error (try refreshing the page).  You should see a fresh error message written to the log.  If you look at the message, it should help you narrow down the problem.</p>
+
+<p>You might see some of the following message:</p>
+
+<p><strong>connect() to unix:/run/uwsgi/firstsite.sock failed (2: No such file or directory)</strong></p>
+
+<p>This indicates that Nginx was unable to find the socket file at the given location.  You should compare the <code>uwsgi_pass</code> location defined in the <code>firstsite</code> and <code>secondsite</code> files in <code>/etc/nginx/sites-available</code> file to the actual location of the <code>firstsite.sock</code> and <code>secondsite.sock</code> socket files in the <code>/run/uwsgi</code> directory.</p>
+
+<p>Check for the existence of the socket files within the <code>/run/uwsgi</code> directory by typing:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo ls /run/uwsgi
+</li></ul></code></pre>
+<p>If there are no socket files in <code>/run/uwsgi</code>, it generally means that the <code>uwsgi</code> process was unable to create it.  Check the status of the <code>uwsgi</code> process to find out whether it was able to start:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo systemctl status uwsgi
+</li></ul></code></pre>
+<p>If the <code>systemctl status</code> command indicated that an error occurred or if you do not find the socket files in the directory, it&rsquo;s an indication that uWSGI was not able to start correctly.  Check the uWSGI process logs by typing:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo journalctl -u uwsgi
+</li></ul></code></pre>
+<p>Take a look at the messages in the logs to find out where uWSGI ran into problems.  There are many reasons that you may have run into problems, but often, if uWSGI was unable to create the socket file, it is for one of these reasons:</p>
+
+<ul>
+<li>The project files are owned by the <code>root</code> user instead of a <code>sudo</code> user</li>
+<li>The <code>ExecStartPre</code> line in the <code>/etc/systemd/system/uwsgi.service</code> file does not include the correct command to create the directory and assign ownership</li>
+<li>The <code>uwsgi_pass</code> path in the site configuration files in the <code>/etc/nginx/sites-available</code> directory are not aimed at the correct socket location</li>
+<li>The uWSGI configuration defined in the <code>.ini</code> files within the <code>/etc/uwsgi/sites</code> directory is incorrect.  Check the following items:
+
+<ul>
+<li>The <code>chdir</code> directive, once interpolated, points to the main project directory.</li>
+<li>The <code>home</code> directive, once interpolated, points to the virtual environment directory.</li>
+<li>The <code>module</code> directive uses the Python module import syntax to load the <code>wsgi.py</code> file from within the inner project directory.</li>
+<li>The <code>socket</code> directive points a file in the <code>/run/uwsgi</code> file (that should be created by <code>ExecStartPre</code> line in the service file mentioned above).</li>
+</ul></li>
+</ul>
+
+<p>If you make changes to the <code>/etc/systemd/system/uwsgi.service</code> file, reload the daemon to reread the service definition and restart the uWSGI process by typing:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo systemctl daemon-reload
+</li><li class="line" data-prefix="$">sudo systemctl restart uwsgi
+</li></ul></code></pre>
+<p>Fixing these issues should allow Nginx to find the socket file correctly.</p>
+
+<p><strong>connect() to unix:/run/uwsgi/firstsite.sock failed (13: Permission denied)</strong></p>
+
+<p>This indicates that Nginx was unable to connect to the uWSGI socket because of permissions problems.  Usually, this happens when the socket is being created in a restricted environment or if the permissions were wrong.  While the uWSGI process is able to create the socket file, Nginx is unable to access it.</p>
+
+<p>This can happen if there are limited permissions at any point between the root directory (<code>/</code>) the socket file.  We can see the permissions and ownership values of the socket file and each of its parent directories by passing the absolute path to our socket file to the <code>namei</code> command:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">namei -nom /run/uwsgi/firstsite.sock
+</li></ul></code></pre><pre class="code-pre "><code><div class="secondary-code-label " title="Output">Output</div>f: /run/uwsgi/firstsite.sock
+ drwxr-xr-x root  root     /
+ drwxr-xr-x root  root     run
+ drwxr-xr-x sammy www-data uwsgi
+ srw-rw---- sammy www-data firstsite.sock
+</code></pre>
+<p>The output displays the permissions of each of the directory components.  By looking at the permissions (first column), owner (second column) and group owner (third column), we can figure out what type of access is allowed to the socket file.</p>
+
+<p>In the above example, each of the directories leading up to the socket file have world read and execute permissions (the permissions column for the directories end with <code>r-x</code> instead of <code>---</code>).  The <code>www-data</code> group has group ownership over the socket itself.  With these settings, Nginx process should be able to access the socket successfully.</p>
+
+<p>If any of the directories leading up to the socket are not owned by the <code>www-data</code> group or do not have world read and execute permission, Nginx will not be able to access the socket.  Usually, this means that the configuration files have a mistake.</p>
+
+<p>If the directory paths have too restrictive of permissions or ownership, look at the <code>/etc/systemd/system/uwsgi.service</code> file.  The <code>ExecStartPre</code> directive is responsible for creating the <code>/run/uwsgi</code> directory and assigning group ownership to the <code>www-data</code> group.  If the commands here are not correct, the directory paths might be too restrictive.</p>
+
+<p>If the socket file itself is inaccessible to the Nginx process, the settings defined in the <code>.ini</code> files within <code>/etc/uwsgi/sites</code> may be incorrect.  Check the values of <code>chown-socket</code> and <code>chmod-socket</code> to make sure that the web process is given permission to access the files.</p>
+
+<h3 id="further-troubleshooting">Further Troubleshooting</h3>
+
+<p>For additional troubleshooting, the logs can help narrow down root causes.  Check each of them in turn and look for messages indicating problem areas.</p>
+
+<p>The following logs may be helpful:</p>
+
+<ul>
+<li>Check the Nginx process logs by typing: <code>sudo journalctl -u nginx</code></li>
+<li>Check the Nginx access logs by typing: <code>sudo less /var/log/nginx/access.log</code></li>
+<li>Check the Nginx error logs by typing: <code>sudo less /var/log/nginx/error.log</code></li>
+<li>Check the uWSGI application logs by typing: <code>sudo journalctl -u uwsgi</code></li>
+</ul>
+
+<p>As you update your configuration or application, you will likely need to restart the processes to adjust to your changes.</p>
+
+<p>If you update your Django application, you can restart the uWSGI process to pick up the changes by typing:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo systemctl restart uwsgi
+</li></ul></code></pre>
+<p>If you change <code>uwsgi</code> systemd service file, reload the daemon and restart the process by typing:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo systemctl daemon-reload
+</li><li class="line" data-prefix="$">sudo systemctl restart uwsgi
+</li></ul></code></pre>
+<p>If you change the Nginx server block configuration, test the configuration and then Nginx by typing:</p>
+<pre class="code-pre command prefixed"><code class="code-highlight language-bash"><ul class="prefixed"><li class="line" data-prefix="$">sudo nginx -t &amp;&amp; sudo systemctl restart nginx
+</li></ul></code></pre>
+<p>These commands are helpful for picking up changes as you adjust your configuration.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this guide, we&rsquo;ve set up two Django projects, each in their own virtual environments.  We&rsquo;ve configured uWSGI to serve each project independently using the virtual environment configured for each.  Afterwards, we set up Nginx to act as a reverse proxy to handle client connections and serve the correct project depending on the client request.</p>
+
+<p>Django makes creating projects and applications simple by providing many of the common pieces, allowing you to focus on the unique elements.  By leveraging the general tool chain described in this article, you can easily serve the applications you create from a single server.</p>
+
+</div>
+
+  </div>
+
+  <div class="tutorial-footer">
+    <div class='tutorial-footer-details'>
+
+
+
+
+    <span class="helpfulness_and_share_box"></span>
+
+    <div class="component-collaborators-container-footer">
+  <div class="component-collaborators-content">
+    <div class="heading">About the authors</div>
+
+      <div class="author">
+          <a href="/community/users/jellingwood">
+            <div class="avatar">
+              <img alt="jellingwood" class="avatar avatar-large" src="https://secure.gravatar.com/avatar/60d901f61a6146e14a3e989bc1f4ef11?secure=true&d=identicon" width="80" height="80" />
+            </div>
+</a>          <div class="byline-info">
+            <div class="names">
+              <a href="/community/users/jellingwood">
+                Justin Ellingwood
+</a>            </div>
+              <p>Senior Technical Writer @DigitalOcean</p>
+          </div>
+      </div>
+
+      <div class="editor-translator">
+      </div>
+  </div>
+</div>
+
+
+</div>
+
+
+<div class='looking-for-an-answer'>
+  <div class='section-content'>
+    <h4>Still looking for an answer?</h4>
+    <div class="lfa--actions">
+      <a href="/community/questions/new?tags=Ubuntu%2CDjango%2CPython+Frameworks%2CUbuntu+16.04"
+         class="lfa--action-box">
+        <span class="icon icon-look-for-answer-question"></span>
+        Ask a question
+      </a>
+      <a href="javascript:void(0)" class="lfa--action-box use-universal-search-js">
+        <span class="icon icon-look-for-answer-search-thin"></span>
+        Search for more help
+      </a>
+    </div>
+  </div>
+</div>
+
+
+  </div>
+
+  <div class="tabs">
+    <ul>
+      <li class="is-active" >
+        <a data-js="related-comments">Comments</a>
+      </li>
+      <li class="not-active">
+        <a data-js="follow-up-questions">Follow-Up Questions</a>
+      </li>
+    </ul>
+  </div>
+
+  <div id="comments-tab" style="display:block">
+    <div class="content-comments">
+</div>
+
+  </div>
+
+
+  <div class="creative-commons">
+  <a class="creative-commons-image" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img rel="license" alt="Creative Commons License" src="/assets/community/creativecommons-027bb7f065acf05ba3c0f84a040d2da641648afc81daa6ff5570301d4998bbb6.png" /></a>
+  <div class="license-text">This work is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+        <div class="clearfix"></div>
+      </div>
+
+      
+      <footer>
+        <section>
+            <a href="https://www.digitalocean.com/community/newsletter" class="panel_with_image">
+            <div class="photo_wrap">
+              <img class="photo" src="https://images.prismic.io/digitalocean/ca12c951cc76f33037f3384bba9942545d160d82_iaan_illo.jpg?auto=compress,format" alt="">
+            </div>
+            <span class="heading">Get our biweekly newsletter</span>
+            <p>
+                Sign up for Infrastructure as a Newsletter.
+            </p>
+          </a>
+            <a href="https://www.digitalocean.com/community/pages/hub-for-good" class="panel_with_image">
+            <div class="photo_wrap">
+              <img class="photo" src="https://images.prismic.io/digitalocean/21ab4275-bcf3-42ac-b148-6f81d516ca1d_Twitter_graphic.png?auto=compress,format&amp;rect=0,61,1024,387&amp;w=370&amp;h=140" alt="">
+            </div>
+            <span class="heading">Hub for Good</span>
+            <p>
+                Working on improving health and education, reducing inequality, and spurring economic growth? We&#39;d like to help.
+            </p>
+          </a>
+            <a href="https://www.digitalocean.com/community/pages/write-for-digitalocean" class="panel_with_image">
+            <div class="photo_wrap">
+              <img class="photo" src="https://images.prismic.io/digitalocean/70910e9fdeb57be46aaa209ce8d9b4dc8e117fab_w4do2.jpg?auto=compress,format" alt="">
+            </div>
+            <span class="heading">Become a contributor</span>
+            <p>
+                You get paid; we donate to tech nonprofits.
+            </p>
+          </a>
+      </section>
+      <section class="slim ">
+        <span class="heading">Featured on Community</span>
+            <a href="https://www.digitalocean.com/community/curriculums/kubernetes-for-full-stack-developers">Kubernetes Course</a>
+            <a href="https://www.digitalocean.com/community/tutorial_series/how-to-code-in-python-3">Learn Python 3</a>
+            <a href="https://www.digitalocean.com/community/tutorials/machine-learning-projects-python-a-digitalocean-ebook">Machine Learning in Python</a>
+            <a href="https://www.digitalocean.com/community/tutorials/how-to-write-your-first-program-in-go">Getting started with Go</a>
+            <a href="https://www.digitalocean.com/community/tutorials/an-introduction-to-kubernetes">Intro to Kubernetes</a>
+        <hr>
+        <span class="heading">DigitalOcean Products</span>
+            <a href="https://www.digitalocean.com/products/droplets/">Virtual Machines</a>
+            <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+            <a href="https://www.digitalocean.com/products/kubernetes/">Managed Kubernetes</a>
+            <a href="https://www.digitalocean.com/products/block-storage/">Block Storage</a>
+            <a href="https://www.digitalocean.com/products/spaces/">Object Storage</a>
+            <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+            <a href="https://www.digitalocean.com/products/vpc/">VPC</a>
+            <a href="https://www.digitalocean.com/products/load-balancer/">Load Balancers</a>
+      </section>
+        <section class="product">
+          <a class="copy" href="/products">
+            <h3>Welcome to the developer cloud</h3>
+            <p>DigitalOcean makes it simple to launch in the cloud and scale up as you grow – whether you’re running one virtual machine or ten thousand.</p>
+            <span class="link_text">Learn More</span>
+          </a>
+          <div class="feature">
+            <a class="img_wrap" href="/products">
+              <img class="photo" src="https://images.prismic.io/digitalocean/95c1215227aa7f39f2bd23076de28feb969741c7_cloud.digitalocean.com_projects_63f9252f-652b-4645-9c0c-bee96f2bc503_resources_ic0ce81-2.png?auto=compress,format" alt="DigitalOcean Cloud Control Panel">
+            </a>
+          </div>
+        </section>
+        <section class="dark">
+          <div class="vlist grow">
+            <a href="https://www.digitalocean.com">
+              <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+                <title>DigitalOcean Homepage</title>
+                <g fill="#0080FF" fill-rule="evenodd">
+                  <path
+                    d="M24.9153 50v-9.661c10.226 0 18.1638-10.1413 14.2372-20.904-1.4406-3.983-4.6327-7.1751-8.6158-8.6158C19.774 6.921 9.6327 14.8305 9.6327 25.0565H0C0 8.7571 15.7627-3.9548 32.8531 1.3842c7.4576 2.3446 13.418 8.2768 15.7345 15.7344C53.9266 34.2373 41.2429 50 24.9153 50">
+                  </path>
+                  <path
+                    d="M15.339 40.3672h9.6045v-9.6045H15.339zM7.9379 47.7684h7.401v-7.4012H7.938zM1.7514 40.3672H7.938v-6.1864H1.7514z">
+                  </path>
+                </g>
+              </svg>
+            </a>
+            <br><br>
+            © <script type="text/javascript">
+              document.write(new Date().getFullYear());
+
+            </script> DigitalOcean, LLC. All rights reserved.
+          </div>
+
+              <div class="vlist">
+                <span class="heading">Company</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/">About</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/about/leadership/">Leadership</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/blog/">Blog</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/careers/">Careers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/partners/">Partners</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/referral-program/">Referral Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/press/">Press</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/legal/">Legal</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/trust/">Security &amp; Trust Center</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Products</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/pricing/">Pricing</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/">Products Overview</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/droplets/">Droplets</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/kubernetes/">Kubernetes</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/managed-databases/">Managed Databases</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/spaces/">Spaces</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/marketplace/">Marketplace</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/load-balancer/">Load Balancers</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/products/block-storage/">Block Storage</a>
+                    </li>
+                    <li>
+                      <a href="https://developers.digitalocean.com/documentation/">API Documentation</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs">Documentation</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs/release-notes/">Release Notes</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Community</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tutorials">Tutorials</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/questions">Q&amp;A</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tools">Tools and Integrations</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/tags">Tags</a>
+                    </li>
+                    <li>
+                      <a href="https://ideas.digitalocean.com/">Product Ideas</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/write-for-donations/">Write for DigitalOcean</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/droplets-for-demos/">Presentation Grants</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/hatch/">Hatch Startup Program</a>
+                    </li>
+                    <li>
+                      <a href="http://store.digitalocean.com/">Shop Swag</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/research/">Research Program</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/open-source/">Open Source</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/community/pages/code-of-conduct">Code of Conduct</a>
+                    </li>
+                </ul>
+              </div>
+              <div class="vlist">
+                <span class="heading">Contact</span>
+                <ul>
+                    <li>
+                      <a href="https://www.digitalocean.com/support/">Get Support</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/docs/getting-started/faq/">Trouble Signing In?</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/sales/">Sales</a>
+                    </li>
+                    <li>
+                      <a href="https://www.digitalocean.com/company/contact/#abuse">Report Abuse</a>
+                    </li>
+                    <li>
+                      <a href="https://status.digitalocean.com/">System Status</a>
+                    </li>
+                </ul>
+              </div>
+        </section>
+      </footer>
+
+
+      <div id='sign-in-modal' class="hidden" role="dialog" aria-labelledby="sign-in-modal-title" aria-modal='true'>
+  <div class='mini-dialog-panel'>
+    <div class='dialog-header'>
+      <span class='close-btn'>&times;</span>
+      <span class='dialog-title' id="sign-in-modal-title">Join the Community</span>
+    </div>
+
+    <div class='dialog-body text-center'>
+      <h1 class='dialog-title'>
+        Before you can do that
+        <small>
+          To complete this action, sign in to your Community account or create a new one.
+        </small>
+      </h1>
+
+      <div class='horizontal-buttons'>
+        <a class="sign-in-link button blue-button" data-default-url="/community/auth/digitalocean" href="/community/auth/digitalocean">Sign In</a>
+        <a class="sign-up-link button blue-button" data-default-url="/community/auth/digitalocean?display=sessionless+register" href="/community/auth/digitalocean?display=sessionless+register">Sign Up</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    
+
+  <script>
+    $(function() {
+      if (!!window.init_sharing) {
+        window.init_sharing();
+      }
+      new window.NewsletterSignup();
+      new window.GrowableMarkdown({ target: '[data-growable-markdown]' });
+
+
+
+      window.initTranslationFeedbackActions(1964);
+
+      $.get('/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04/comments/new', function(data){
+        $('.content-comments').html(data);
+      });
+
+      $.get('/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04/featured_content', function(data){
+        $('.featured-items-right-bar-container').html(data);
+      });
+
+      $.get('/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04/helpfulness_and_share_box', function(data){
+        $('.helpfulness_and_share_box').html(data);
+      });
+    });
+  </script>
+
+  <script type="application/ld+json">
+  {"@context":"http://schema.org","@type":"Article","name":"How To Serve Django Applications with uWSGI and Nginx on Ubuntu 16.04","headline":"How To Serve Django Applications with uWSGI and Nginx on Ubuntu 16.04","alternativeHeadline":"How To Serve Django Applications with uWSGI and Nginx on Ubuntu 16.04","description":"Django is a powerful web framework that can help you get your Python application or website off the ground. Django includes a simplified development server for testing your code locally, but for anything even slightly production related, a more secure and powerful web server...","keywords":"Python Frameworks,Python,Django,Ubuntu,Ubuntu 16.04,DO-Writers","url":"https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.digitalocean.com/community/tutorials/how-to-serve-django-applications-with-uwsgi-and-nginx-on-ubuntu-16-04"},"dateModified":"2020-11-30T21:35:46Z","inLanguage":"en","accessMode":"textual","accessModeSufficient":"textual","isAccessibleForFree":true,"license":"https://creativecommons.org/licenses/by-nc-sa/4.0/","publishingPrinciples":"https://www.digitalocean.com/community/tutorials/technical-recommendations-and-best-practices-for-digitalocean-s-tutorials","author":[{"@type":"Person","name":"Justin Ellingwood","@id":"https://www.digitalocean.com/community/users/jellingwood"}],"datePublished":"2016-05-16T21:39:58Z","image":{"@type":"ImageObject","url":"https://community-cdn-digitalocean-com.global.ssl.fastly.net/variants/DrUZ3Cwx3tKYUUad6BL9AQJZ/035575f2985fe451d86e717d73691e533a1a00545d7230900ed786341dc3c882","height":375,"width":750},"interactionStatistic":[{"@type":"InteractionCounter","interactionType":"http://schema.org/LikeAction","userInteractionCount":"59"},{"@type":"InteractionCounter","interactionType":"http://schema.org/CommentAction","userInteractionCount":"39"}],"sourceOrganization":{"@type":"Organization","name":"DigitalOcean Community","url":"https://www.digitalocean.com/community"},"publisher":{"@type":"Organization","name":"DigitalOcean","url":"https://www.digitalocean.com","logo":{"@type":"ImageObject","url":"https://assets.digitalocean.com/logos/DO_Logo_horizontal_blue.png","width":351,"height":60}},"comment":[{"comment":{"@context":"http://schema.org","@type":"Comment","text":"Really great tutorial, I have a question that i’m developing APIs using django/django-rest-framework so do i need both nginx and uwsgi for production evironment or i can just use the UWSGI?"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"I have been dealing with this problem, has anyone submitted? Thank you 2020/06/10 01:43:31 [error] 9806#9806: *1 connect() to unix:/run/uwsgi/mysite.sock failed (111: Connection refused) while connecting to upstream, client: 192.168.1.46, server: 172.16.12.239, request: \"GET / HTTP/1.1\", upstream: \"uwsgi://unix:/run/uwsgi/mysite.sock:\", host: \"172.16.12.239\""}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"thank you!!!!!!!!!, it worked!!!!!!!!!!!"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"best tutorial! especially the troubleshooting section at the bottom. it would be great if there were instructions on how to configure the django project with production environment variables, etc. thanks either way!"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"Everything is fine. I have make an API and I send a GET request. It works for me when I run the command: uwsgi –http :8080 –home /home/carlos/Env/alfred –chdir /home/carlos/project/alfrednluapi -w alfredapi.wsgi but at the moment to access in the browser I have this error: Internal Server Error I have no error in /var/log/nginx/error.log Previously I had other application running in port 80 but now My API is running in porto 80, It can be accessed here http://209.97.143.4/interpret/nlu?text=hello [this give an error] [EDIT] Well I can run this on the web console… I can be teste here, this is what I want but I prefer to do it with uwsgi http://209.97.143.4:8080/interpreter/nlu/?text=hey [this works fine]"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"● uwsgi.service - uWSGI Emperor service Loaded: loaded (/etc/systemd/system/uwsgi.service; enabled; vendor preset: enabled) Active: active (running) since Mon 2018-08-27 12:12:12 UTC; 49min ago Process: 4117 ExecStartPre=/bin/bash -c mkdir -p /run/uwsgi; chown ubuntu:www-data /run/uwsgi (code=exited, status=0/SUCCESS) Main PID: 4125 (uwsgi) Status: “The Emperor is governing 0 vassals” Tasks: 1 Memory: 3.5M CPU: 639ms CGroup: /system.slice/uwsgi.service └─4125 /usr/local/bin/uwsgi –emperor /etc/uwsgi/sites Aug 27 13:01:07 ip-x-x-x- uwsgi[4125]: uwsgi socket 0 bound to UNIX address /run/uwsgi/lp.sock fd 3 Aug 27 13:01:07 ip-x-x-x- uwsgi[4125]: setuid() to 1000 Aug 27 13:01:07 ip-x-x-x- uwsgi[4125]: Python version: 3.6.5 (default, Aug 23 2018, 11:35:47) [GCC 5.4.0 20160609] Aug 27 13:01:07 ip-x-x-x- uwsgi[4125]: !!! Python Home is not a directory: /home/ubuntu/.virtualenv/lp !!! Aug 27 13:01:07 ip-x-x-x- uwsgi[4125]: Set PythonHome to /home/ubuntu/.virtualenv/lp Aug 27 13:01:07 ip-x-x-x- uwsgi[4125]: Fatal Python error: Py_Initialize: Unable to get the locale encoding Aug 27 13:01:07 ip-x-x-x- uwsgi[4125]: ModuleNotFoundError: No module named ‘encodings’ Aug 27 13:01:07 ip-x-x-x- uwsgi[4125]: Current thread 0x00007fdff8575700 (most recent call first): Aug 27 13:01:07 ip-x-x-x- uwsgi[4125]: Mon Aug 27 13:01:07 2018 - [emperor] curse the uwsgi instance lp.ini (pid: 4623) Aug 27 13:01:10 ip-x-x-x- uwsgi[4125]: Mon Aug 27 13:01:10 2018 - [emperor] removed uwsgi instance lp.ini I am getting the above error"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"is anyone gets — no python application found, check your startup logs for errors — error when they run sudo systemctl status uwsgi you have a typo / wrong input in your project.ini file: on line module = yourapp.wsgi:application Justin, thank you, you’re awesome."}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"Hey, Well everything worked, thankfully, but I still can’t understand how Nginx communicates with uWSGI. I know it’s this part of the configuration file but I don’t fully understand how that works. location / { include uwsgi_params; uwsgi_pass unix:/run/uwsgi/secondsite.sock; } For example, what does include do, and how does it know that uwsgi_params are located in /etc/nginx/ ? What do the uwsgi_params do anyway? And what is a uwsgi_pass and how is the socket being used here? Why did we put it in /run/wsgi/ ? I know they’re a lot of questions and I do try to look things up elsewhere on the internet but it’s all very complicated and each question leads to many more! So I thought maybe if I asked here it’d keep the answers within the limits of only what we’re trying to do in this guide."}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"Few improvement points: 1) Removing the default site from nginx’s sites-enabled folder should be part of the setup, not troubleshooting. Without that, you are 90% in trouble. 2) I was not using the default app.settings of the django so that made figure it out (and thus lose some time). It is added to the uwsgi.ini as follows: env = DJANGO_SETTINGS_MODULE=my_app_name.settings_production Adding this would make the tutorial more realistic, than the two-site scheme. To me that was redundant and distraction. In real life, almost all servers host single site. Otherwise great tutorial, thank you. "}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"i hope problems with nginx like that. When i use runserver 0.0.0.0:8080 its working well. how the solutions? “Message model doesn’t declare an explicit applabel and isn’t in an application in INSTALLEDAPPS."}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"Hey! Great tutorial! What about if i want to use the same ip but with different ports instead of using domains? Have someone been able to do it? Thanks!"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"Tried this guide twice, both time failed the same way. the second time I changed from using variabel names to hard coded names in /etc/uwsgi/sites/sio.ini but I still get a 502 error. https://hastebin.com/osulevujek.makefile"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"If you experience issues running the following: sudo pip3 install virtualenv virtualenvwrapper Just run the following commands and then run the above command: export LC_ALL=\"en_US.UTF-8\" export LC_CTYPE=\"en_US.UTF-8\" sudo dpkg-reconfigure locales"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"I did all the steps but my domain is showing Welcome to nginx! Could you add a comment on how i should enable www-data? i think this step isnt really talked about I also think i don’t have it enabled on a fresh server."}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"@jellingwood I’ve followed all the steps, rebooted my server but still I’m getting 502 Bad gateway error when I try to reach my app by going to its domain. What can be the issue?"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"man I had to copy and paste to get this to work, think it was some type error with my ini file, also i had to reboot my server for the services to take effect. Ill be installing postgres and setting up lets encrypt next. @jellingwood thanks for these guides, also is there any book you could recommend?"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"@jellingwood I’ve been following your instructions here but running into problems getting uWsgi to run. I posted a detailed description on StackOverflow: http://stackoverflow.com/questions/42323280/cannot-start-uwsgi-on-ubuntu Would you mind checking it out? Many thanks for the awesome guides!!! "}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"Following on from my other comments I decided to destroy the droplet and make a new one and went through this again but only setting up ‘firstsite’ and I think Ive done everything correctly as I get the 'Welcome to Django’ message now at my server ip and can access /admin so I guess this is setup now?"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"this was all fine until the end and Im just getting a 502 error message at my server ip http://188.166.234.138/ I changed server_name to that ip in the settings file, is there something else that needs to be done too?"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"this part didnt work for me echo “source /usr/local/bin/virtualenvwrapper.sh” \u003e\u003e ~/.bashrc virtualenvwrapper.sh for me was installed here /home/myusernamehere/.local/bin/virtualenvwrapper.sh not sure why but I had to change the path for that command accordingly"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"Me sirvio mucho para un proyecto que necesitaba. Sin duda el mejor tutorial que hay en internet. "}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"Can you please update this tutorial for Ubuntu 18.04? Or are the steps still the same for 18.04?"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"El mejor tutorial que encontré por internet! Muchas Gracias!"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"Sorry,I followed all the steps above,but I have a problem. When I open http://my_server_IP ,I saw a nginx page,not the Django “It works!” page. Is it right? I don’t have domain name,how can I test the 2 websites use IP? thank you!"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"Quick note that installing uWsgi globally is a mistake, particularly if managing multiple django projects. Instead, uwsgi should be installed in the project’s virtual environment. I used this guide a few years ago to set up some django environments in production and staging. When it came time to update python recently, I had to change the /etc/systemd/system/uwsgi.service file’s line ExecStart= to reflect the path to the uwsgi binary in the virtualenv. "}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"I spent a bunch of time chasing down this error so I wanted to leave the solution here in case anyone else runs into it (and it might be worth fixing this guide): I kept getting an error when trying to run uWSGI: Fatal Python error: Py_Initialize: Unable to get the locale encoding ImportError: No module named ‘encodings’ Eventually I traced this to the concept that the Python versions were not matching up. And finally I discovered this is because I was following the Python 3 directions in this guide but there was no alternate option for installing Django with Python 3. So this line: “pip install django” should actually be “pip3 install django” if you are trying to run everything with Python 3. Maybe I should have figured that out earlier, but since there were alternate directions for each version everywhere else but not here it fooled me and sent me on a long chase to figure out the answer. After deleting that environment and using pip3 to install Django the error disappeared."}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"Thank you so much! I try many tutor with uwsgi and gunicorn and all of them have some problem with unix socket or something else (permissions and etc.) In your tutor all works fine and i can use it for my ansible template! Thank you one more time! "}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"What if I want to use it with virtualenv (in fact venv for python3.6)? Is it enough to change “home” in /etc/uwsgi/sites/firstsite.ini to my venv path? I also added virtualenv=\"mypathToVenv\" I am getting “Internal Server Error” and in nginx logs: “[error] 356#356: *640 connect() to unix:/run/uwsgi/mysite.sock failed (111: Connection refused) while connecting to upstream, client… ”"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"Thank you very very much! You helped me solve my 3 day-long issues!!! :)"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"Great tutorial. It was really helpful for me. Thanks."}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"I’m confused. I can get this to run successfully: uwsgi --socket :8080 --protocol=http -w fourth.wsgi And the Django “It worked!” page is displayed. Here is my project folder is here: $ pwd /home/ubuntu/sites/fourth_site/ $ ls -la 4 drwxrwxr-x 3 ubuntu ubuntu 4096 May 1 23:29 fourth 4 -rwxrwxr-x 1 ubuntu ubuntu 804 Apr 29 00:22 manage.py 4 -rw-rw-r-- 1 ubuntu ubuntu 143 May 1 23:36 uwsgi.ini And here’s the contents of fourth: $ ls -la fourth drwxrwxr-x 3 ubuntu ubuntu 4096 May 1 23:29 . drwxrwxr-x 3 ubuntu ubuntu 4096 May 1 23:40 .. -rw-rw-r-- 1 ubuntu ubuntu 0 Apr 29 00:22 __init__.py drwxrwxr-x 2 ubuntu ubuntu 4096 Apr 29 00:23 __pycache__ -rw-rw-r-- 1 ubuntu ubuntu 3094 Apr 29 00:22 settings.py -rw-rw-r-- 1 ubuntu ubuntu 763 Apr 29 00:22 urls.py -rw-rw-r-- 1 ubuntu ubuntu 390 Apr 29 00:22 wsgi.py Here are the contents of my uwsgi.ini: [uwsgi] http-socket = :8080 chdir = /home/ubuntu/sites/fourth_site wsgi-file = fourth/wsgi.py processes = 4 threads = 2 stats = 127.0.0.1:8001 To run this I’m doing this: uwsgi --ini uwsgi.ini And that also gets the Django “It worked!” success page. However, if I change my ini file to this (below) it no longer works: [uwsgi] socket = 127.0.0.1:8080 chdir = /home/ubuntu/sites/fourth_site wsgi-file = fourth/wsgi.py processes = 4 threads = 2 stats = 127.0.0.1:8001 The browser then returns “This site can’t be reached.” Anyone have any ideas?"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"Thank you for great tutorial, I do all steps in this guide, every thing work fine except that the last result have error with static files permission: 2017/07/21 11:04:42 [error] 1737#1737: *3 open() “/root/firstsite/static/admin/css/dashboard.css” failed (13: Permission denied), client: ip, server: domain, request: “GET /static/admin/css/dashboard.css HTTP/1.1”, host: “domain:88”, referrer: “http://domain:88/admin/” Could you please tell me how to solve it? Many thanks,"}},{"comment":{"@context":"http://schema.org","@type":"Comment","text":"Can someone tell me why this works: [uwsgi] http-socket = :8080 chdir = /home/ubuntu/sites/third_site wsgi-file = third/wsgi.py processes = 4 threads = 2 stats = 127.0.0.1:8001 But this doesn’t: [uwsgi] socket = 127.0.0.1:8080 chdir = /home/ubuntu/sites/third_site wsgi-file = third/wsgi.py processes = 4 threads = 2 stats = 127.0.0.1:8001"}}]}
+</script>
+
+
+
+  <script>
+    $(function(){
+      $('.date-views').append('<span class=\"meta-section pageviews\"><span class=\"icon icon-eye v-mid\"><\/span><span class=\"views-count v-mid\">218.3k<\/span><span class=\"sr-only\"> views<\/span><\/span>');
+    });
+  </script>
+  <div class="mobile_nav hidden" role="dialog" aria-label="Mobile Navigation" aria-modal='true'>
+    <div class='dialog-panel'>
+      <div class='dialog-header'>
+        <span class='close-btn'>&times;</span>
+        <span class='dialog-title'></span>
+      </div>
+      <div class='dialog-body'>
+        <header>Community</header>
+        <ul role="menu">
+          <li role="menuitem">
+            <a data-activatable="true" href="/community/tutorials">Tutorials</a>
+          </li>
+          <li role="menuitem">
+            <a data-activatable="true" href="/community/questions">Questions</a>
+          </li>
+          <li role="menuitem">
+            <a href="/community/pages/write-for-digitalocean">Write for Us</a>
+          </li>
+          <li role="menuitem">
+            <a href="https://hacktoberfest.digitalocean.com">Hacktoberfest</a>
+          </li>
+          <li role="menuitem">
+            <a href="/community/tools">Tools</a>
+          </li>
+        </ul>
+
+        <header>Products</header>
+        <ul role="menu">
+          <li role="menuitem">
+            <a href="https://www.digitalocean.com/">Homepage</a>
+          </li>
+          <li role="menuitem">
+            <a href="https://www.digitalocean.com/pricing">Pricing</a>
+          </li>
+          <li role="menuitem">
+            <a href="https://www.digitalocean.com/products">Product Overview</a>
+          </li>
+          <li role="menuitem">
+            <a href="https://marketplace.digitalocean.com/">Marketplace</a>
+          </li>
+        </ul>
+
+        <header>Customers</header>
+        <ul role="menu">
+          <li role="menuitem">
+            <a href="https://cloud.digitalocean.com/login">Control Panel</a>
+          </li>
+          <li role="menuitem">
+            <a href="https://www.digitalocean.com/docs/">Documentation</a>
+          </li>
+          <li role="menuitem">
+            <a href="https://www.digitalocean.com/company/contact/#support">Contact Support</a>
+          </li>
+          <li role="menuitem">
+            <a href="https://www.digitalocean.com/company/contact/sales/">Contact Sales</a>
+          </li>
+        </ul>
+
+        <ul role="menu">
+          <li role="menuitem" class="mobile-log-in">
+              <a id="log-in" href="/community/auth/digitalocean">Sign In</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    $(function() {
+      $('.use-universal-search-js').on('click', function () {
+        $('#q').trigger('click');
+      });
+
+      $.get('/community/banner', function(data) {
+        $('[data-js="global-navbar-banner"]').html(data);
+        $('.navbar .utility').attr('style', $('[data-js="global-navbar-banner"] a').data('navbar-style'));
+      });
+    });
+
+    window.loadUniversalSearchScript( function () {
+      var search = new UniversalSearch({
+        element_id: 'q',
+        search_on_slash: true,
+        primary_list: ['quicknav', 'community_consolidated'],
+        secondary_list: ['alldocs', 'marketplace'],
+        algolia_app_id: "6ZHEUVKJ88",
+        algolia_public_key: "c5470567eae7fa1177d43222e18ba086"
+      });
+      search.start();
+    });
+  </script>
+
+
+      <script src="https://do-community.github.io/dns-tool-embed/bundle.js" type="text/javascript"></script>
+      <script src="https://do-community.github.io/glob-tool-embed/bundle.js" type="text/javascript"></script>
+  </body>
+</html>
