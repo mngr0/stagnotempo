@@ -5,13 +5,15 @@ import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 
 inputs = [2,3]
-output=14
+output=15
+led=14
 # GPIO 23 set up as input. It is pulled up to stop false signals
 for gpio in inputs:
     GPIO.setup(gpio, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(output, GPIO.OUT)
-
 GPIO.output(output, 0)
+GPIO.setup(led, GPIO.OUT)
+GPIO.output(led, 0)
 
 ttw = 0
 
@@ -58,6 +60,8 @@ def thread_function():
     #GPIO.add_event_detect(2, GPIO.RISING, callback=foo, bouncetime=400)
     #GPIO.add_event_detect(3, GPIO.RISING, callback=bar, bouncetime=400)
     print("Thread  starting")
+    #accendere LED
+    GPIO.output(led, 1)
     while 1:
         check()
         time.sleep(10/1000)
