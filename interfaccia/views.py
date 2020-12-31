@@ -23,5 +23,4 @@ def post_manager(request):
             routine.set_interval(1,request.POST['tempo1'])
         if "tempo2" in request.POST.keys():
             routine.set_interval(2,request.POST['tempo2'])
-    
     return HttpResponseRedirect('/')
