@@ -4,14 +4,14 @@ import time
 import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 
-inputs_empty = [2,3]
-inputs_pump = [20,21]
+inputs_empty = [20,21]
+inputs_pump = [2,3]
 
-out_pump = 17
-led_pump = 5
+out_pump = 27
+led_pump = 7
 
-out_empty = 27
-led_empty = 7
+out_empty = 17
+led_empty = 5
 
 led_on=15
 
@@ -31,6 +31,26 @@ for gpio in inputs_empty:
 ttw = 0 #time to wait
 
 from interfaccia.models import Configurazione
+
+#CONTROL_STATE = 1
+#CONTROL_ON = 2
+global empty_state
+empty_state=0
+
+def empty_state_edge(par):
+    print("toggle empty _ state")
+    global empty_state
+    empty_state= not empty_state
+    GPIO.output(out_empty, empty_state)
+    GPIO.output(led_empty, empty_state)
+
+
+def empty_on_edge(par):
+    print("toggle empty _ on")
+    global empty_state
+    empty_state= not empty_state
+    GPIO.output(out_empty, empty_state)
+    GPIO.output(led_empty, empty_state)
 
 def gen_fun(index):
     def fun(par):
@@ -55,6 +75,9 @@ def check():
         ttw=0
 
 def thread_function():
+    GPIO.add_event_detect(inputs_empty[0], GPIO.RISING, callback=empty_state_edge, bouncetime=400)
+    GPIO.add_event_detect(inputs_empty[1], GPIO.BOTH, callback=empty_on_edge, bouncetime=400)
+
     for index,pin in enumerate(inputs_pump):
         GPIO.add_event_detect(pin, GPIO.RISING, callback=gen_fun(index+1), bouncetime=400)
     #GPIO.add_event_detect(2, GPIO.RISING, callback=foo, bouncetime=400)
