@@ -75,8 +75,8 @@ def check():
         ttw=0
 
 def thread_function():
-    GPIO.add_event_detect(inputs_empty[0], GPIO.RISING, callback=empty_state_edge, bouncetime=400)
-    GPIO.add_event_detect(inputs_empty[1], GPIO.BOTH, callback=empty_on_edge, bouncetime=400)
+    GPIO.add_event_detect(inputs_empty[0], GPIO.FALLING, callback=empty_state_edge, bouncetime=400)
+    GPIO.add_event_detect(inputs_empty[1], GPIO.BOTH, callback=empty_on_edge, bouncetime=10)
 
     for index,pin in enumerate(inputs_pump):
         GPIO.add_event_detect(pin, GPIO.RISING, callback=gen_fun(index+1), bouncetime=400)
