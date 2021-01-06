@@ -4,6 +4,9 @@ import time
 import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 
+def millis():
+    return round(time.monotonic() * 1000)
+
 inputs_empty = [20,21]
 inputs_pump = [2,3]
 
@@ -37,7 +40,10 @@ from interfaccia.models import Configurazione
 global empty_state
 empty_state=0
 
-def empty_state_edge(par):
+
+
+def empty_state_edge():
+#wait and check, if it is still up, execute, else quit
     print("toggle empty _ state")
     global empty_state
     empty_state= not empty_state
@@ -45,7 +51,7 @@ def empty_state_edge(par):
     GPIO.output(led_empty, empty_state)
 
 
-def empty_on_edge(par):
+def empty_on_edge():
     print("toggle empty _ on")
     global empty_state
     empty_state= not empty_state
@@ -53,13 +59,76 @@ def empty_on_edge(par):
     GPIO.output(led_empty, empty_state)
 
 def gen_fun(index):
-    def fun(par):
+    def fun():
         global ttw
         print("clicked ",index)
         if ttw == 0:
             print("waiting for ", Configurazione.objects.get(pk=index).durata)
             ttw = Configurazione.objects.get(pk=index).durata
     return fun
+
+
+#list of tuples: (pin, edge_sense, callback, last_state, millis_edge)
+inputs_state = [
+                 {  'pin':inputs_empty[0],
+                    'edge_sense':0,
+                    'cb':empty_state_edge,
+                    'last_state':GPIO.input(inputs_empty[0]),
+                    'millis_edge':millis(),
+                    'debounce':300,
+                    'edge_found':0
+
+                 },
+                 {  'pin':inputs_empty[1],
+                    'edge_sense':1,
+                    'cb':empty_on_edge,
+                    'last_state':GPIO.input(inputs_empty[1]),
+                    'millis_edge':millis(),
+                    'debounce':300,
+                    'edge_found':0
+                 },
+                 {  'pin':inputs_empty[1],
+                    'edge_sense':0,
+                    'cb':empty_on_edge,
+                    'last_state':GPIO.input(inputs_empty[1]),
+                    'millis_edge':millis(),
+                    'debounce':300,
+                    'edge_found':0
+                 },
+                 {  'pin':inputs_pump[0],
+                    'edge_sense':0,
+                    'cb':gen_fun(1),
+                    'last_state':GPIO.input(inputs_pump[0]),
+                    'millis_edge':millis(),
+                    'debounce':300,
+                    'edge_found':0
+                 },
+                 {  'pin':inputs_pump[1],
+                    'edge_sense':0,
+                    'cb':gen_fun(2),
+                    'last_state':GPIO.input(inputs_pump[1]),
+                    'millis_edge':millis(),
+                    'debounce':300,
+                    'edge_found':0
+                 }
+
+               ]
+
+
+def check_bounce(structs):
+    for struct in structs:
+        new_state=GPIO.input(struct['pin'])
+        now_time=millis()
+        if new_state is not struct['last_state']:
+             struct['last_state']=new_state
+             struct['millis_edge']=now_time
+             struct['edge_found']=False
+        else:
+             if struct['edge_found'] is False:
+                 if new_state == struct['edge_sense']:
+                     if now_time - struct['millis_edge'] > struct['debounce']:
+                         struct['edge_found']=True
+                         struct['cb']()
 
 
 def check():
@@ -75,17 +144,12 @@ def check():
         ttw=0
 
 def thread_function():
-    GPIO.add_event_detect(inputs_empty[0], GPIO.FALLING, callback=empty_state_edge, bouncetime=400)
-    GPIO.add_event_detect(inputs_empty[1], GPIO.BOTH, callback=empty_on_edge, bouncetime=10)
-
-    for index,pin in enumerate(inputs_pump):
-        GPIO.add_event_detect(pin, GPIO.RISING, callback=gen_fun(index+1), bouncetime=400)
-    #GPIO.add_event_detect(2, GPIO.RISING, callback=foo, bouncetime=400)
-    #GPIO.add_event_detect(3, GPIO.RISING, callback=bar, bouncetime=400)
     print("Thread  starting")
     #accendere LED
     GPIO.output(led_on, 1)
     while 1:
+        #check inputs, debouncing
+        check_bounce(inputs_state)
         check()
         time.sleep(10/1000)
 
