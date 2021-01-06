@@ -31,8 +31,14 @@ for gpio in inputs_pump:
 for gpio in inputs_empty:
     GPIO.setup(gpio, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-ttw = 0 #time to wait
+global end_wait
+end_wait = 0
 
+global start_wait
+start_wait=0
+
+global started
+started = False
 from interfaccia.models import Configurazione
 
 global empty_state
@@ -55,11 +61,12 @@ def empty_on_edge():
 
 def gen_fun(index):
     def fun():
-        global ttw
+        global end_wait
         print("clicked ",index)
-        if ttw == 0:
+        if millis() > end_wait:
             print("waiting for ", Configurazione.objects.get(pk=index).durata)
             ttw = Configurazione.objects.get(pk=index).durata
+            end_wait = millis() + ttw
     return fun
 
 inputs_state = [
@@ -68,7 +75,7 @@ inputs_state = [
                     'cb':empty_state_edge,
                     'last_state':GPIO.input(inputs_empty[0]),
                     'millis_edge':millis(),
-                    'debounce':300,
+                    'debounce':50,
                     'edge_found':0,
                     'last_edge':None
                  },
@@ -77,7 +84,7 @@ inputs_state = [
                     'cb':empty_on_edge,
                     'last_state':GPIO.input(inputs_empty[1]),
                     'millis_edge':millis(),
-                    'debounce':300,
+                    'debounce':50,
                     'edge_found':0,
                     'last_edge':None
                  },
@@ -86,7 +93,7 @@ inputs_state = [
                     'cb':empty_on_edge,
                     'last_state':GPIO.input(inputs_empty[1]),
                     'millis_edge':millis(),
-                    'debounce':300,
+                    'debounce':50,
                     'edge_found':0,
                     'last_edge':None
                  },
@@ -95,7 +102,7 @@ inputs_state = [
                     'cb':gen_fun(1),
                     'last_state':GPIO.input(inputs_pump[0]),
                     'millis_edge':millis(),
-                    'debounce':300,
+                    'debounce':50,
                     'edge_found':0,
                     'last_edge':None
                  },
@@ -104,7 +111,7 @@ inputs_state = [
                     'cb':gen_fun(2),
                     'last_state':GPIO.input(inputs_pump[1]),
                     'millis_edge':millis(),
-                    'debounce':300,
+                    'debounce':50,
                     'edge_found':0,
                     'last_edge':None
                  }
@@ -130,16 +137,23 @@ def check_bounce(structs):
 
 
 def check():
-    global ttw
-    if ttw != 0:
-        print("check ")
-        GPIO.output(out_pump, 1)
-        GPIO.output(led_pump, 1)
-        time.sleep(int(ttw)/1000)
-        print("done waiting")
-        GPIO.output(led_pump, 0)
-        GPIO.output(out_pump, 0)
-        ttw=0
+    global end_wait
+    global start_wait
+    global started
+    if millis()<end_wait:
+        if not started:
+            print("start wait  ")
+            GPIO.output(out_pump, 1)
+            GPIO.output(led_pump, 1)
+            start_wait=millis()
+            started = True
+    else:
+        if started:
+            started = False
+            print("done waiting")
+            GPIO.output(led_pump, 0)
+            GPIO.output(out_pump, 0)
+    #if up for more than given time: go to pwm
 
 def thread_function():
     print("Thread  starting")
