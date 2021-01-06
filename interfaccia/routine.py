@@ -8,15 +8,15 @@ def millis():
     return round(time.monotonic() * 1000)
 
 inputs_empty = [20,21]
-inputs_pump = [2,3]
+inputs_pump = [19,26]
 
 out_pump = 27
-led_pump = 7
+led_pump = 13
 
 out_empty = 17
-led_empty = 5
+led_empty = 6
 
-led_on=15
+led_on=5
 
 outputs= [out_pump,led_pump,out_empty,led_empty,led_on]
 
@@ -69,8 +69,8 @@ inputs_state = [
                     'last_state':GPIO.input(inputs_empty[0]),
                     'millis_edge':millis(),
                     'debounce':300,
-                    'edge_found':0
-
+                    'edge_found':0,
+                    'last_edge':None
                  },
                  {  'pin':inputs_empty[1],
                     'edge_sense':1,
@@ -78,7 +78,8 @@ inputs_state = [
                     'last_state':GPIO.input(inputs_empty[1]),
                     'millis_edge':millis(),
                     'debounce':300,
-                    'edge_found':0
+                    'edge_found':0,
+                    'last_edge':None
                  },
                  {  'pin':inputs_empty[1],
                     'edge_sense':0,
@@ -86,7 +87,8 @@ inputs_state = [
                     'last_state':GPIO.input(inputs_empty[1]),
                     'millis_edge':millis(),
                     'debounce':300,
-                    'edge_found':0
+                    'edge_found':0,
+                    'last_edge':None
                  },
                  {  'pin':inputs_pump[0],
                     'edge_sense':0,
@@ -94,7 +96,8 @@ inputs_state = [
                     'last_state':GPIO.input(inputs_pump[0]),
                     'millis_edge':millis(),
                     'debounce':300,
-                    'edge_found':0
+                    'edge_found':0,
+                    'last_edge':None
                  },
                  {  'pin':inputs_pump[1],
                     'edge_sense':0,
@@ -102,7 +105,8 @@ inputs_state = [
                     'last_state':GPIO.input(inputs_pump[1]),
                     'millis_edge':millis(),
                     'debounce':300,
-                    'edge_found':0
+                    'edge_found':0,
+                    'last_edge':None
                  }
                ]
 
@@ -116,10 +120,13 @@ def check_bounce(structs):
              struct['edge_found']=False
         else:
              if struct['edge_found'] is False:
-                 if new_state == struct['edge_sense']:
-                     if now_time - struct['millis_edge'] > struct['debounce']:
-                         struct['edge_found']=True
+                 if now_time - struct['millis_edge'] > struct['debounce']:
+                     if new_state == struct['edge_sense'] and new_state != struct['last_edge']:
                          struct['cb']()
+                     else:
+                         print('edge ignored newstate=',new_state," last_edge=",struct['last_edge'])
+                     struct['edge_found']=True
+                     struct['last_edge']=new_state
 
 
 def check():
