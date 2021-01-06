@@ -35,15 +35,10 @@ ttw = 0 #time to wait
 
 from interfaccia.models import Configurazione
 
-#CONTROL_STATE = 1
-#CONTROL_ON = 2
 global empty_state
 empty_state=0
 
-
-
 def empty_state_edge():
-#wait and check, if it is still up, execute, else quit
     print("toggle empty _ state")
     global empty_state
     empty_state= not empty_state
@@ -67,8 +62,6 @@ def gen_fun(index):
             ttw = Configurazione.objects.get(pk=index).durata
     return fun
 
-
-#list of tuples: (pin, edge_sense, callback, last_state, millis_edge)
 inputs_state = [
                  {  'pin':inputs_empty[0],
                     'edge_sense':0,
@@ -111,9 +104,7 @@ inputs_state = [
                     'debounce':300,
                     'edge_found':0
                  }
-
                ]
-
 
 def check_bounce(structs):
     for struct in structs:
@@ -148,7 +139,6 @@ def thread_function():
     #accendere LED
     GPIO.output(led_on, 1)
     while 1:
-        #check inputs, debouncing
         check_bounce(inputs_state)
         check()
         time.sleep(10/1000)
