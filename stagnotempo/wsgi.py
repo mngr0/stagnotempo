@@ -15,8 +15,6 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'stagnotempo.settings')
 
 #from multiprocessing import Process
 
-#from interfaccia import routine
-
 #p = Process(target=routine.thread_function, args=())
 #p.start()
 
